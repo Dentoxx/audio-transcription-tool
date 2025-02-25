@@ -1,4 +1,5 @@
-Audio Transcription Tool
+# Audio Transcription Tool
+
 A full-stack application that uses Whisper JAX to transcribe audio files and YouTube videos. The project features a clean, responsive front end served via GitHub Pages and a Python-based backend (using FastAPI) that handles real transcription tasks with Whisper JAX.
 
 Features
