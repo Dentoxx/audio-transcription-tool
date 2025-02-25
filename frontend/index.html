@@ -580,7 +580,7 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
   <script>
-    // Simple tab switching
+    // Tab switching functionality
     document.querySelectorAll('.tab').forEach(tab => {
       tab.addEventListener('click', () => {
         document.querySelectorAll('.tab, .tab-content').forEach(el => el.classList.remove('active'));
@@ -589,25 +589,24 @@
       });
     });
 
-    // WhisperService: a wrapper for calling Whisper JAX (or a mock for testing)
+    // WhisperService: connects the UI to the backend.
     class WhisperService {
       constructor() {
-        // In production, this.API_URL should point to your deployed Whisper JAX inference endpoint.
-        this.API_URL = "https://api-inference.huggingface.co/models/openai/whisper-large-v3";
-        this.API_KEY = ""; // Set this to your actual API key or token if needed.
+        // Point to your backend endpoint (change this URL if not running locally).
+        this.API_URL = "http://localhost:8000/transcribe";
+        this.API_KEY = ""; // If your backend requires a token.
         this.isProcessing = false;
-        // For testing locally, set useLocalMock to true.
-        this.useLocalMock = true;
+        // Real backend mode enabled:
+        this.useLocalMock = false;
       }
 
       async transcribeFile(file, includeTimestamps = true) {
         if (this.isProcessing) throw new Error("Another transcription is in progress");
-        if (this.useLocalMock) return this._mockTranscribe(file, includeTimestamps);
         this.isProcessing = true;
         try {
           const formData = new FormData();
           formData.append("file", file);
-          formData.append("timestamps", includeTimestamps ? "true" : "false");
+          formData.append("timestamps", includeTimestamps);
           const response = await fetch(this.API_URL, {
             method: "POST",
             body: formData,
@@ -626,14 +625,15 @@
       async transcribeYouTube(url, includeTimestamps = true) {
         if (this.isProcessing) throw new Error("Another transcription is in progress");
         if (!this._isValidYouTubeUrl(url)) throw new Error("Invalid YouTube URL");
-        if (this.useLocalMock) return this._mockTranscribe({ name: "YouTube Video" }, includeTimestamps);
         this.isProcessing = true;
         try {
+          const formData = new FormData();
+          formData.append("youtube_url", url);
+          formData.append("timestamps", includeTimestamps);
           const response = await fetch(this.API_URL, {
             method: "POST",
-            body: JSON.stringify({ youtube_url: url, timestamps: includeTimestamps }),
+            body: formData,
             headers: {
-              "Content-Type": "application/json",
               "Authorization": `Bearer ${this.API_KEY}`
             }
           });
@@ -649,117 +649,9 @@
         const regex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
         return regex.test(url);
       }
-
-      async _mockTranscribe(file, includeTimestamps) {
-        await new Promise(resolve => setTimeout(resolve, 3000));
-        const fileName = file.name ? file.name.toLowerCase() : "unknown";
-        let contentType = "general";
-        if (fileName.includes("lecture") || fileName.includes("class")) contentType = "lecture";
-        else if (fileName.includes("interview") || fileName.includes("podcast")) contentType = "interview";
-        else if (fileName.includes("meeting")) contentType = "meeting";
-        const duration = Math.floor(Math.random() * 1500) + 300;
-        return this._generateRealisticTranscription(contentType, duration, includeTimestamps);
-      }
-
-      _generateRealisticTranscription(contentType, duration, includeTimestamps) {
-        const templates = {
-          lecture: {
-            intro: [
-              "Welcome to today's lecture on advanced machine learning concepts.",
-              "Today we're going to discuss the fundamentals of quantum computing.",
-              "In this session, we'll explore the principles of behavioral economics.",
-              "Welcome back everyone. Let's continue our discussion on climate science."
-            ],
-            content: [
-              "The first concept we need to understand is the gradient descent algorithm.",
-              "Let's discuss how neural networks process information through layers.",
-              "Reinforcement learning teaches via rewards and penalties.",
-              "Data patterns become apparent as we analyze the results."
-            ],
-            conclusion: [
-              "In our next lecture, we'll build on these concepts.",
-              "Thank you for your attention today.",
-              "That concludes the lecture for now."
-            ]
-          },
-          interview: {
-            intro: [
-              "Thank you for joining us today.",
-              "Welcome to the interview session.",
-              "I'm excited to have you share your insights."
-            ],
-            questions: [
-              "Could you tell us a bit about your background?",
-              "What inspired you to pursue this field?",
-              "How would you describe your work to a newcomer?"
-            ],
-            responses: [
-              "That's an interesting point.",
-              "I started in this field unexpectedly.",
-              "Collaboration is key to success."
-            ],
-            conclusion: [
-              "Thank you for your valuable insights.",
-              "This conversation has been very informative."
-            ]
-          },
-          meeting: {
-            intro: [
-              "Let's get started with today's meeting.",
-              "Welcome everyone, let's review our agenda.",
-              "Thanks for joining this discussion."
-            ],
-            topics: [
-              "Let's review our current project updates.",
-              "There are some key action items to address.",
-              "We need to discuss upcoming deadlines."
-            ],
-            conclusion: [
-              "That wraps up our meeting.",
-              "Thank you for your contributions.",
-              "We'll follow up with minutes shortly."
-            ]
-          },
-          general: {
-            intro: [
-              "Here's the transcription of the audio content.",
-              "Below is the text extracted from the recording."
-            ],
-            content: [
-              "The main idea is clearly presented in this segment.",
-              "Several points were made that deserve further discussion."
-            ],
-            conclusion: [
-              "This concludes the transcription.",
-              "Thank you for listening."
-            ]
-          }
-        };
-
-        const template = templates[contentType];
-        let result = "";
-        let currentTime = 0;
-        const intro = template.intro[Math.floor(Math.random() * template.intro.length)];
-        if (includeTimestamps) result += `[00:00] ${intro}\n\n`;
-        else result += `${intro}\n\n`;
-        currentTime += 15;
-        const contentItems = template.content || template.topics || [];
-        while (currentTime < duration - 30 && contentItems.length) {
-          const item = contentItems[Math.floor(Math.random() * contentItems.length)];
-          const timeStamp = new Date(currentTime * 1000).toISOString().substr(14, 5);
-          if (includeTimestamps) result += `[00:${timeStamp}] ${item}\n\n`;
-          else result += `${item}\n\n`;
-          currentTime += Math.floor(Math.random() * 10) + 5;
-        }
-        const conclusion = template.conclusion[Math.floor(Math.random() * template.conclusion.length)];
-        const finalTime = new Date(currentTime * 1000).toISOString().substr(14, 5);
-        if (includeTimestamps) result += `[00:${finalTime}] ${conclusion}`;
-        else result += conclusion;
-        return result;
-      }
     }
 
-    // UI Event handlers and integration
+    // UI Event Handlers
     const whisperService = new WhisperService();
 
     document.getElementById("audio-file").addEventListener("change", (e) => {
