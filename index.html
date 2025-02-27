@@ -1,67 +1,8 @@
-/* Add safe area insets for notched phones */
-    @supports (padding: max(0px)) {
-      body {
-        padding-left: max(20px, env(safe-area-inset-left));
-        padding-right: max(20px, env(safe-area-inset-right)); 
-        padding-bottom: max(20px, env(safe-area-inset-bottom));
-      }
-    }
-    
-    /* Improve speed on mobile browsers */
-    @media (max-width: 768px) {
-      .bg-sunflower {
-        display: none; /* Remove floating background sunflowers on mobile for performance */
-      }
-    }    /* Media query for touch devices */
-    @media (hover: none) {
-      /* Improve touch targets for mobile */
-      .checkbox-container {
-        padding-left: 40px;
-      }
-      .checkmark {
-        height: 28px;
-        width: 28px;
-      }
-      /* Adjusted check position for touch devices */
-      .checkbox-container input:checked ~ .checkmark:after {
-        width: 8px;
-        height: 16px;
-      }
-      .btn, .tab {
-        padding-top: 14px;
-        padding-bottom: 14px;
-      }
-      .language-select {
-        padding: 14px;
-      }
-      
-      /* Disable hover animations on touch devices */
-      .upload-container:hover,
-      .result-container:hover,
-      .options-container:hover,
-      .checkbox-container:hover,
-      .timestamp-item:hover,
-      .speaker-section:hover,
-      .tab:hover,
-      .transcript-text:hover {
-        transform: none;
-      }
-      
-      /* Adjust or remove effects that depend on hover */
-      .btn:before {
-        display: none; /* Remove hover animation effect */
-      }
-      .sunflower:hover {
-        transform: none;
-      }
-      .sunflower.right:hover {
-        transform: scaleX(-1);
-      }
-    }<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Audio Transcription Tool</title>
   <style>
     :root {
@@ -263,38 +204,7 @@
       align-items: center;
     }
 
-    /* Checkbox styling */
-    .checkbox-container {
-      position: relative;
-      padding-left: 35px;
-      cursor: pointer;
-      user-select: none;
-      font-weight: 500;
-      transition: transform 0.2s ease;
-    }
-    .checkbox-container:hover {
-      transform: translateX(3px);
-    }
-    .checkbox-container input {
-      position: absolute;
-      opacity: 0;
-      cursor: pointer;
-      height: 0;
-      width: 0;
-    }
-    .checkmark {
-      position: absolute;
-      top: 50%;
-      left: 0;
-      transform: translateY(-50%);
-      height: 25px;
-      width: 25px;
-      background-color: var(--white);
-      border: 2px solid var(--lavender-mid);
-      border-radius: 5px;
-      transition: all 0.2s ease;
-    }
-    /* Checkbox styles with completely new approach */
+    /* Checkbox styling - Completely revised */
     .checkbox-container {
       position: relative;
       padding-left: 35px;
@@ -304,6 +214,10 @@
       transition: transform 0.2s ease;
       display: flex;
       align-items: center;
+    }
+    
+    .checkbox-container:hover {
+      transform: translateX(3px);
     }
     
     .checkbox-container input {
@@ -327,6 +241,16 @@
       box-sizing: border-box;
     }
     
+    .checkbox-container:hover input ~ .checkmark {
+      background-color: var(--lavender-light);
+      box-shadow: 0 0 0 3px rgba(147,112,219,0.2);
+    }
+    
+    .checkbox-container input:checked ~ .checkmark {
+      background-color: var(--lavender-mid);
+      box-shadow: 0 0 0 3px rgba(147,112,219,0.2);
+    }
+    
     /* Create a new simpler checkmark using a different approach */
     .checkbox-container input:checked ~ .checkmark:after {
       content: "";
@@ -339,22 +263,14 @@
       height: 12px;
       border: solid white;
       border-width: 0 3px 3px 0;
+      animation: checkmark-appear 0.3s ease forwards;
     }
-    .checkbox-container:hover input ~ .checkmark {
-      background-color: var(--lavender-light);
-      box-shadow: 0 0 0 3px rgba(147,112,219,0.2);
-    }
-    .checkbox-container input:checked ~ .checkmark {
-      background-color: var(--lavender-mid);
-      box-shadow: 0 0 0 3px rgba(147,112,219,0.2);
-    }
-    .checkbox-container input:checked ~ .checkmark:after {
-      display: block;
-      animation: checkmark 0.2s ease-in-out;
-    }
-    @keyframes checkmark {
-      0% { opacity: 0; transform: rotate(45deg) scale(0.8); }
-      100% { opacity: 1; transform: rotate(45deg) scale(1); }
+    
+    /* Animation for checkmark */
+    @keyframes checkmark-appear {
+      0% { opacity: 0; transform: translate(-50%, -25%) rotate(45deg) scale(0); }
+      50% { opacity: 1; transform: translate(-50%, -25%) rotate(45deg) scale(1.2); }
+      100% { opacity: 1; transform: translate(-50%, -25%) rotate(45deg) scale(1); }
     }
 
     .language-select {
@@ -768,84 +684,13 @@
       }
     }
     
-    /* Mobile responsiveness improvements */
+    /* Basic responsiveness */
     @media (max-width: 768px) {
-      body {
-        padding: 10px;
-      }
-      h1 {
-        font-size: 2.2rem;
-      }
-      .description {
-        font-size: 1rem;
-      }
-      .sunflower {
-        width: 60px;
-        height: 60px;
-      }
-      .sunflower.left {
-        left: 2%;
-      }
-      .sunflower.right {
-        right: 2%;
-      }
-      .upload-container, .result-container {
-        padding: 20px;
-      }
       .options-grid {
         grid-template-columns: 1fr;
-        gap: 10px;
       }
       .btn-group {
         flex-direction: column;
-      }
-      .corner-sunflower {
-        width: 25px;
-        height: 25px;
-      }
-      .upload-box {
-        padding: 30px 15px;
-      }
-      .tab {
-        padding: 10px;
-        font-size: 14px;
-      }
-    }
-    
-    /* Small phones */
-    @media (max-width: 480px) {
-      h1 {
-        font-size: 1.8rem;
-      }
-      .description {
-        font-size: 0.9rem;
-      }
-      .upload-icon {
-        font-size: 40px;
-      }
-      .upload-box h3 {
-        font-size: 16px;
-      }
-      .upload-box p {
-        font-size: 12px;
-      }
-      .sunflower {
-        width: 40px;
-        height: 40px;
-      }
-      .options-title {
-        font-size: 1rem;
-      }
-      .checkbox-container {
-        font-size: 14px;
-      }
-      .checkmark {
-        height: 22px;
-        width: 22px;
-      }
-      .btn {
-        padding: 12px 20px;
-        font-size: 14px;
       }
     }
   </style>
@@ -938,13 +783,10 @@
       <div class="error-message" id="error-message"></div>
 
       <div class="progress-container" id="progress-container">
-        <!-- New simplified progress bar implementation -->
         <div class="progress-bar">
           <div class="progress" id="progress"></div>
         </div>
         <div class="status" id="status">Preparing transcription...</div>
-        <!-- Debug display -->
-        <div id="debug-info" style="font-size: 10px; color: #999; margin-top: 5px; display: none;"></div>
       </div>
       
       <!-- Corner Sunflowers -->
