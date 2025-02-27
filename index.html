@@ -1087,9 +1087,6 @@
       // Server URL - REPLACE THIS WITH YOUR ACTUAL GLITCH SERVER URL
       const SERVER_URL = 'https://splashy-bejewled-chocolate.glitch.me';
 
-      // Hardcoded API key (demo only; replace with your real key or prompt the user)
-      const apiKey = "sk_d24a85cfcfe691b0fa2908a5d05e9b1dbe7ba894ba206569";
-
       let selectedFile = null;
       let selectedYoutubeUrl = null;
       let transcriptionData = null;
@@ -1310,7 +1307,7 @@
         // Determine which method is active and check if we have valid input
         if (activeMethod === 'file-upload' && !selectedFile) return;
         if (activeMethod === 'youtube' && !selectedYoutubeUrl) return;
-
+      
         // Show progress container and disable button
         progressContainer.style.display = 'block';
         transcribeBtn.disabled = true;
@@ -1322,20 +1319,39 @@
           return;
         }
         
-        // For files, proceed with the regular transcription
-        // Calculate realistic timing based on file size
+        // For files, calculate realistic timing based on file size
         const fileSize = selectedFile.size;
-        // Based on user feedback: 1.7MB processed in ~7 seconds = ~250KB/second
         const bytesPerSecond = 250000;
         const estimatedSeconds = Math.max(5, Math.min(180, fileSize / bytesPerSecond));
         
-        // Calculate a step size to reach ~99% in the estimated time
-        // Using 350ms intervals from the original code
+        // Start progress animation
+        let transProgress = 0;
+        let at99Seconds = 0;
+        let stepsCompleted = 0;
+        
         const totalSteps = Math.floor(estimatedSeconds * (1000 / 350));
         const progressStep = 99 / totalSteps;
         
-        console.log(`File size: ${formatFileSize(fileSize)}, Est. time: ${Math.round(estimatedSeconds)}s, Steps: ${totalSteps}, Step size: ${progressStep.toFixed(3)}%`);
-
+        const transcriptionInterval = setInterval(function() {
+          // Same progress animation code as before
+          if (transProgress < 99) {
+            stepsCompleted++;
+            const randomFactor = 1 + (Math.random() * 0.4 - 0.2) * (1 - transProgress/100);
+            const newProgress = Math.min(99, transProgress + (progressStep * randomFactor));
+            transProgress = newProgress;
+            progressBar.style.width = transProgress + '%';
+            void progressBar.offsetWidth;
+            statusText.textContent = `Transcribing: ${Math.floor(transProgress)}%`;
+          } else {
+            at99Seconds++;
+            if (at99Seconds === 4) {
+              statusText.textContent = "Almost ready!";
+            } else if (at99Seconds === 12) {
+              statusText.textContent = "Just a sec :)";
+            }
+          }
+        }, 350);
+      
         // Build form data
         const formData = new FormData();
         formData.append('file', selectedFile);
@@ -1345,103 +1361,48 @@
         if (languageSelect.value) {
           formData.append('language_code', languageSelect.value);
         }
-
-        // Create request
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', 'https://api.elevenlabs.io/v1/speech-to-text');
-        xhr.setRequestHeader('xi-api-key', apiKey);
-
-        // Start simulating progress based on file size
-        let transProgress = 0;
-        let at99Seconds = 0;
-        let stepsCompleted = 0;
-        
-        const transcriptionInterval = setInterval(function() {
-          if (transProgress < 99) {
-            stepsCompleted++;
+      
+        // Send to your server instead of directly to ElevenLabs
+        fetch(`${SERVER_URL}/transcribe-file`, {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          // Stop progress animation
+          clearInterval(transcriptionInterval);
+          
+          // Handle successful response
+          if (data.success) {
+            // Set progress to 100%
+            progressBar.style.width = '100%';
+            statusText.textContent = 'Transcription successful!';
             
-            // Add a bit of randomness to make it look more natural
-            // Higher randomness at the beginning, less towards the end
-            const randomFactor = 1 + (Math.random() * 0.4 - 0.2) * (1 - transProgress/100);
+            // Process the results
+            transcriptionData = data.transcription;
+            displayResults(data.transcription);
             
-            // Calculate new progress with natural slowdown towards the end
-            const newProgress = Math.min(99, transProgress + (progressStep * randomFactor));
-            transProgress = newProgress;
-            
-            // Update progress bar
-            progressBar.style.width = transProgress + '%';
-            // Force a browser reflow to make sure styles are applied
-            void progressBar.offsetWidth;
-            
-            // Update status text
-            statusText.textContent = `Transcribing: ${Math.floor(transProgress)}%`;
-            
-            // Log progress occasionally
-            if (stepsCompleted % 10 === 0) {
-              console.log(`Progress: ${transProgress.toFixed(1)}%, Step: ${stepsCompleted}/${totalSteps}`);
-            }
-          } else {
-            // We're at 99%, now count seconds
-            at99Seconds++;
-            
-            // Change text after 4 seconds
-            if (at99Seconds === 4) {
-              statusText.textContent = "Almost ready!";
-            } 
-            // Change text again after 12 seconds total (8 more seconds)
-            else if (at99Seconds === 12) {
-              statusText.textContent = "Just a sec :)";
-            }
-          }
-        }, 350);
-
-        xhr.onreadystatechange = function() {
-          if (xhr.readyState === XMLHttpRequest.DONE) {
-            // Once we get a response, stop the progress simulation
-            clearInterval(transcriptionInterval);
-
-            if (xhr.status === 200) {
-              // Set progress to 100% - using direct style for reliability 
-              progressBar.style.width = '100%';
-              // Force a reflow to ensure the browser applies the style immediately
-              void progressBar.offsetWidth;
-              console.log("Completed! Final width:", progressBar.style.width);
-              statusText.textContent = 'Transcription successful!';
-
-              const data = JSON.parse(xhr.responseText);
-              transcriptionData = data;
-              displayResults(data);
-
-              // Show results after a short delay
-              setTimeout(() => {
-                resultContainer.style.display = 'block';
-                progressContainer.style.display = 'none';
-                transcribeBtn.disabled = false;
-                
-                // Trigger success animation
-                createConfetti();
-                
-                // Scroll to results
-                resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }, 1000);
-
-            } else {
-              // Handle errors
+            // Show results after a short delay
+            setTimeout(() => {
+              resultContainer.style.display = 'block';
               progressContainer.style.display = 'none';
               transcribeBtn.disabled = false;
-
-              let errorDetail;
-              try {
-                const errorResponse = JSON.parse(xhr.responseText);
-                errorDetail = errorResponse.detail?.message || 'Transcription failed. Please check your API key and try again.';
-              } catch(e) {
-                errorDetail = 'Transcription failed. Please check your API key and try again.';
-              }
-              showError(errorDetail);
-              console.error('Transcription error:', xhr.responseText);
-            }
+              createConfetti();
+              resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 1000);
+          } else {
+            throw new Error(data.error || 'Transcription failed');
           }
-        };
+        })
+        .catch(error => {
+          // Handle errors
+          clearInterval(transcriptionInterval);
+          progressContainer.style.display = 'none';
+          transcribeBtn.disabled = false;
+          showError(error.message || 'Transcription failed');
+          console.error('Transcription error:', error);
+        });
+      }
 
         // Send the request
         xhr.send(formData);
