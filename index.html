@@ -1303,77 +1303,57 @@
           return;
         }
         
-        console.log('Transcribing file:', selectedFile.name);
-        
-        // Show progress container and disable button
+        // Show progress
         progressContainer.style.display = 'block';
         transcribeBtn.disabled = true;
         errorMessage.style.display = 'none';
         
-        // Calculate realistic timing based on file size
-        const fileSize = selectedFile.size;
-        const bytesPerSecond = 250000; // 250KB per second
-        const estimatedSeconds = Math.max(5, Math.min(180, fileSize / bytesPerSecond));
-        
-        // Start progress animation
-        startProgressAnimation(estimatedSeconds);
-        
-        // Build form data
+        // Build form data - make sure 'file' is the field name
         const formData = new FormData();
-        formData.append('file', selectedFile);
-        formData.append('diarize', diarizeCheckbox.checked);
-        formData.append('tag_audio_events', tagEventsCheckbox.checked);
-        if (languageSelect.value) {
+        formData.append('file', selectedFile);  // This MUST match upload.single('file')
+        
+        if (diarizeCheckbox && diarizeCheckbox.checked) {
+          formData.append('diarize', 'true');
+        }
+        
+        if (tagEventsCheckbox && tagEventsCheckbox.checked) {
+          formData.append('tag_audio_events', 'true');
+        }
+        
+        if (languageSelect && languageSelect.value) {
           formData.append('language_code', languageSelect.value);
         }
         
-        // Send the file to the server
+        // Send to server
         fetch(`${SERVER_URL}/transcribe-file`, {
           method: 'POST',
-          body: formData
+          body: formData,
+          // Don't set Content-Type header - browser sets it with boundary
         })
         .then(response => {
           if (!response.ok) {
-            return response.json().then(data => {
-              throw new Error(data.error || 'Error processing file');
+            return response.text().then(text => {
+              try {
+                // Try to parse as JSON first
+                const json = JSON.parse(text);
+                throw new Error(json.error || 'Server error');
+              } catch (e) {
+                // If not JSON, show the HTML or text error
+                console.error('Server returned:', text);
+                throw new Error('Server error - check logs');
+              }
             });
           }
           return response.json();
         })
         .then(data => {
-          console.log('Transcription successful:', data);
-          
-          if (data.success) {
-            // Complete progress bar
-            progressBar.style.width = '100%';
-            
-            // Display results
-            transcriptionData = data.transcription;
-            displayResults(data.transcription);
-            
-            // Show results container
-            resultContainer.style.display = 'block';
-            
-            // Hide progress container
-            progressContainer.style.display = 'none';
-            
-            // Re-enable button
-            transcribeBtn.disabled = false;
-            
-            // Create success animation
-            createConfetti();
-            
-            // Scroll to results
-            resultContainer.scrollIntoView({ behavior: 'smooth' });
-          } else {
-            throw new Error(data.error || 'Transcription failed');
-          }
+          // Handle success...
         })
         .catch(error => {
-          console.error('Transcription error:', error);
+          console.error('Error:', error);
+          showError(error.message);
           progressContainer.style.display = 'none';
           transcribeBtn.disabled = false;
-          showError(error.message || 'Failed to transcribe audio');
         });
       }
 
