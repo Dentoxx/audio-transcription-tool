@@ -654,7 +654,7 @@
       const languageSelect = document.getElementById('language-select');
 
       // Hardcoded API key (demo only; replace with your real key or prompt the user)
-      const apiKey = "YOUR_API_KEY_HERE";
+      const apiKey = "sk_d24a85cfcfe691b0fa2908a5d05e9b1dbe7ba894ba206569";
 
       let selectedFile = null;
       let transcriptionData = null;
@@ -740,7 +740,7 @@
           } else {
             clearInterval(transcriptionInterval);
           }
-        }, 1000);
+        }, 200);
 
         xhr.onreadystatechange = function() {
           if (xhr.readyState === XMLHttpRequest.DONE) {
