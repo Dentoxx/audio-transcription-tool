@@ -298,14 +298,14 @@
     .checkbox-container .checkmark:after {
       content: "";
       position: absolute;
-      /* Precisely position the checkmark */
-      left: 9px;  /* Carefully adjusted from 50% */
-      top: 5px;   /* Carefully adjusted from 50% */
-      width: 5px;
-      height: 10px;
+      /* Better fixed positioning for checkmark */
+      left: 8px;
+      top: 4px;
+      width: 6px;
+      height: 12px;
       border: solid white;
       border-width: 0 3px 3px 0;
-      transform: rotate(45deg); /* Only rotate, no translation */
+      transform: rotate(45deg);
       display: none;
     }
     .checkbox-container:hover input ~ .checkmark {
