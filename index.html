@@ -152,7 +152,10 @@
       display: flex;
       align-items: center;
     }
+    /* Use only one definition for the checkmark to ensure it’s visible */
     .checkbox-container .checkmark:after {
+      content: "";
+      position: absolute;
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%) rotate(45deg);
@@ -160,8 +163,6 @@
       height: 10px;
       border: solid white;
       border-width: 0 3px 3px 0;
-      content: "";
-      position: absolute;
       display: none;
     }
     .checkbox-container input {
@@ -190,23 +191,8 @@
       background-color: var(--lavender-mid);
       box-shadow: 0 0 0 3px rgba(147,112,219,0.2);
     }
-    .checkbox-container .checkmark:after {
-      content: "";
-      position: absolute;
-      display: none;
-    }
     .checkbox-container input:checked ~ .checkmark:after {
       display: block;
-    }
-    /* Note: The hardcoded centering below is overridden by the more robust version above */
-    .checkbox-container .checkmark:after {
-      left: 10px;
-      top: 7px;
-      width: 5px;
-      height: 10px;
-      border: solid white;
-      border-width: 0 3px 3px 0;
-      transform: rotate(45deg);
     }
     .language-select {
       width: 100%;
@@ -721,11 +707,11 @@
 
       transcribeBtn.addEventListener('click', startTranscription);
 
-      // Updated startTranscription using XMLHttpRequest for real progress tracking
+      // Updated startTranscription:
       function startTranscription() {
         if (!selectedFile) return;
 
-        // Show progress
+        // Show progress container and disable button
         progressContainer.style.display = 'block';
         transcribeBtn.disabled = true;
         errorMessage.style.display = 'none';
@@ -740,24 +726,43 @@
           formData.append('language_code', languageSelect.value);
         }
 
-        statusText.textContent = 'Uploading and transcribing...';
+        statusText.textContent = 'Uploading...';
 
         const xhr = new XMLHttpRequest();
         xhr.open('POST', 'https://api.elevenlabs.io/v1/speech-to-text');
         xhr.setRequestHeader('xi-api-key', apiKey);
 
-        // Monitor upload progress
+        let uploadComplete = false;
+        let transcriptionInterval;
+
+        // Upload progress – we map upload progress to 0–50% of the bar
         xhr.upload.onprogress = function(e) {
           if (e.lengthComputable) {
-            const percentComplete = Math.round((e.loaded / e.total) * 100);
-            progressBar.style.width = percentComplete + '%';
-            statusText.textContent = `Uploading: ${percentComplete}%`;
+            const uploadPercent = e.loaded / e.total;
+            const progressVal = Math.round(uploadPercent * 50); // 0 to 50%
+            progressBar.style.width = progressVal + '%';
+            statusText.textContent = `Uploading: ${Math.round(uploadPercent * 100)}%`;
+            if (uploadPercent === 1 && !uploadComplete) {
+              uploadComplete = true;
+              // Start simulating transcription progress (50–99%)
+              let transProgress = 50;
+              transcriptionInterval = setInterval(function() {
+                if (transProgress < 99) {
+                  transProgress++;
+                  progressBar.style.width = transProgress + '%';
+                  statusText.textContent = `Transcribing: ${transProgress}%`;
+                } else {
+                  clearInterval(transcriptionInterval);
+                }
+              }, 1000);
+            }
           }
         };
 
         xhr.onreadystatechange = function() {
           if (xhr.readyState === XMLHttpRequest.DONE) {
             if (xhr.status === 200) {
+              if (transcriptionInterval) clearInterval(transcriptionInterval);
               progressBar.style.width = '100%';
               statusText.textContent = 'Transcription successful!';
               const data = JSON.parse(xhr.responseText);
@@ -769,6 +774,7 @@
                 transcribeBtn.disabled = false;
               }, 1000);
             } else {
+              if (transcriptionInterval) clearInterval(transcriptionInterval);
               progressContainer.style.display = 'none';
               transcribeBtn.disabled = false;
               let errorDetail;
