@@ -1,6 +1,0 @@
-fastapi
-uvicorn
-yt-dlp
-whisper-jax
-jax
-jaxlib
