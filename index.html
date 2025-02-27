@@ -735,7 +735,7 @@
         const transcriptionInterval = setInterval(function() {
           if (transProgress < 99) {
             transProgress++;
-            progressBar.style.width = transProgress + '%';
+            progressBar.style.width = `${transProgress}%`;
             statusText.textContent = `Transcribing: ${transProgress}%`;
           } else {
             clearInterval(transcriptionInterval);
