@@ -349,6 +349,10 @@
       background-size: 15px 15px;
       background-image: linear-gradient(45deg, rgba(255,255,255,0.2) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.2) 75%, transparent 75%, transparent);
       animation: progress-animation 1s linear infinite;
+      /* Ensure proper display on all browsers */
+      display: block;
+      position: relative;
+      min-width: 5px;
     }
     @keyframes progress-animation {
       0% { background-position: 0 0; }
@@ -962,13 +966,25 @@
 
         // Start simulating the "transcribing" progress from 0% to ~99%
         let transProgress = 0;
+        let at99Seconds = 0;
         const transcriptionInterval = setInterval(function() {
           if (transProgress < 99) {
             transProgress++;
-            progressBar.style.width = `${transProgress}%`;
+            // Set the width directly with a string value with % unit
+            progressBar.style.width = transProgress + '%';
             statusText.textContent = `Transcribing: ${transProgress}%`;
           } else {
-            clearInterval(transcriptionInterval);
+            // We're at 99%, now count seconds
+            at99Seconds++;
+            
+            // Change text after 4 seconds
+            if (at99Seconds === 4) {
+              statusText.textContent = "Almost ready!";
+            } 
+            // Change text again after 12 seconds total (8 more seconds)
+            else if (at99Seconds === 12) {
+              statusText.textContent = "Just a sec :)";
+            }
           }
         }, 350);
 
@@ -978,8 +994,10 @@
             clearInterval(transcriptionInterval);
 
             if (xhr.status === 200) {
-              // Set progress to 100%
+              // Set progress to 100% - using direct style for reliability
               progressBar.style.width = '100%';
+              // Force a reflow to ensure the browser applies the style immediately
+              progressBar.offsetHeight;
               statusText.textContent = 'Transcription successful!';
 
               const data = JSON.parse(xhr.responseText);
