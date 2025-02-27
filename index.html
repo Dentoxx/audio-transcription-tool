@@ -743,9 +743,7 @@
 
         // API call to ElevenLabs – here we simulate the call
         statusText.textContent = 'Uploading and transcribing...';
-
-        // In a real-world scenario, you would uncomment the fetch() call below and remove the simulation.
-        /*
+        
         fetch('https://api.elevenlabs.io/v1/speech-to-text', {
           method: 'POST',
           headers: {
@@ -780,7 +778,7 @@
           showError(error.message);
           console.error('Transcription error:', error);
         });
-        */
+        
 
         // Simulation of API call
         setTimeout(() => {
