@@ -36,37 +36,7 @@
       overflow-x: hidden;
     }
     
-    /* Floating Background Sunflowers */
-    .bg-sunflower {
-      position: absolute;
-      width: 40px;
-      height: 40px;
-      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="%23FFD700"/><g fill="%23FF8C00"><circle cx="50" cy="10" r="10"/><circle cx="50" cy="90" r="10"/><circle cx="10" cy="50" r="10"/><circle cx="90" cy="50" r="10"/><circle cx="22" cy="22" r="10"/><circle cx="78" cy="78" r="10"/><circle cx="22" cy="78" r="10"/><circle cx="78" cy="22" r="10"/></g></svg>');
-      background-size: contain;
-      background-repeat: no-repeat;
-      z-index: -1;
-      opacity: 0.1;
-      pointer-events: none;
-      animation: float 15s infinite ease-in-out;
-    }
-    .bg-sunflower:nth-child(odd) {
-      animation-duration: 20s;
-    }
-    .bg-sunflower:nth-child(3n) {
-      animation-duration: 25s;
-      animation-delay: 5s;
-    }
-    .bg-sunflower:nth-child(4n) {
-      animation-duration: 18s;
-      animation-delay: 8s;
-    }
-    @keyframes float {
-      0%, 100% { transform: translateY(0) rotate(0); }
-      25% { transform: translateY(-15px) rotate(5deg); }
-      50% { transform: translateY(5px) rotate(-5deg); }
-      75% { transform: translateY(-10px) rotate(3deg); }
-    }
-    
+    /* Container */
     .container {
       max-width: 900px;
       margin: 0 auto;
@@ -74,6 +44,8 @@
       position: relative;
       z-index: 1;
     }
+    
+    /* Header */
     header {
       text-align: center;
       margin-bottom: 40px;
@@ -96,6 +68,8 @@
       font-size: 1.1rem;
       line-height: 1.5;
     }
+    
+    /* Main content container */
     .upload-container {
       background-color: var(--white);
       border-radius: 20px;
@@ -152,6 +126,78 @@
     .upload-method.active {
       display: block;
       animation: fadeIn 0.5s ease;
+    }
+    
+    /* File upload box */
+    .upload-box {
+      border: 3px dashed var(--lavender-mid);
+      border-radius: 12px;
+      padding: 40px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background-color: var(--lavender-light);
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .upload-box:hover {
+      background-color: rgba(147,112,219,0.1);
+      transform: scale(1.01);
+    }
+    .upload-box:after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, rgba(147,112,219,0.1) 25%, transparent 25%, transparent 50%, rgba(147,112,219,0.1) 50%, rgba(147,112,219,0.1) 75%, transparent 75%, transparent);
+      background-size: 20px 20px;
+      opacity: 0.3;
+      z-index: 0;
+    }
+    .upload-icon {
+      font-size: 60px;
+      color: var(--lavender-mid);
+      margin-bottom: 15px;
+      position: relative;
+      z-index: 1;
+      transition: transform 0.3s ease;
+    }
+    .upload-box:hover .upload-icon {
+      transform: scale(1.1) rotate(5deg);
+    }
+    .upload-box h3 {
+      position: relative;
+      z-index: 1;
+      margin-bottom: 8px;
+      color: var(--lavender-dark);
+    }
+    .upload-box p {
+      position: relative;
+      z-index: 1;
+      color: var(--text-secondary);
+    }
+    .file-input {
+      display: none;
+    }
+    
+    /* File info display */
+    .file-info {
+      background-color: rgba(230,230,250,0.3);
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      display: none;
+      border: 1px solid rgba(147,112,219,0.1);
+      transition: transform 0.3s ease;
+    }
+    .file-info:hover {
+      transform: translateX(5px);
+    }
+    .file-info p {
+      margin-bottom: 5px;
     }
     
     /* YouTube input styling */
@@ -248,74 +294,7 @@
       color: var(--text-secondary);
     }
     
-    .upload-box {
-      border: 3px dashed var(--lavender-mid);
-      border-radius: 12px;
-      padding: 40px 20px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      background-color: var(--lavender-light);
-      margin-bottom: 20px;
-      position: relative;
-      overflow: hidden;
-    }
-    .upload-box:hover {
-      background-color: rgba(147,112,219,0.1);
-      transform: scale(1.01);
-    }
-    .upload-box:after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(45deg, rgba(147,112,219,0.1) 25%, transparent 25%, transparent 50%, rgba(147,112,219,0.1) 50%, rgba(147,112,219,0.1) 75%, transparent 75%, transparent);
-      background-size: 20px 20px;
-      opacity: 0.3;
-      z-index: 0;
-    }
-    .upload-icon {
-      font-size: 60px;
-      color: var(--lavender-mid);
-      margin-bottom: 15px;
-      position: relative;
-      z-index: 1;
-      transition: transform 0.3s ease;
-    }
-    .upload-box:hover .upload-icon {
-      transform: scale(1.1) rotate(5deg);
-    }
-    .upload-box h3 {
-      position: relative;
-      z-index: 1;
-      margin-bottom: 8px;
-      color: var(--lavender-dark);
-    }
-    .upload-box p {
-      position: relative;
-      z-index: 1;
-      color: var(--text-secondary);
-    }
-    .file-input {
-      display: none;
-    }
-    .file-info {
-      background-color: rgba(230,230,250,0.3);
-      padding: 15px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      display: none;
-      border: 1px solid rgba(147,112,219,0.1);
-      transition: transform 0.3s ease;
-    }
-    .file-info:hover {
-      transform: translateX(5px);
-    }
-    .file-info p {
-      margin-bottom: 5px;
-    }
+    /* Options styling */
     .options-container {
       margin-bottom: 25px;
       background-color: rgba(230,230,250,0.3);
@@ -343,8 +322,8 @@
       display: flex;
       align-items: center;
     }
-
-    /* Checkbox styling - Completely revised */
+    
+    /* Checkbox styling */
     .checkbox-container {
       position: relative;
       padding-left: 35px;
@@ -355,11 +334,9 @@
       display: flex;
       align-items: center;
     }
-    
     .checkbox-container:hover {
       transform: translateX(3px);
     }
-    
     .checkbox-container input {
       position: absolute;
       opacity: 0;
@@ -367,7 +344,6 @@
       height: 0;
       width: 0;
     }
-    
     .checkmark {
       position: absolute;
       left: 0;
@@ -380,39 +356,34 @@
       border-radius: 5px;
       box-sizing: border-box;
     }
-    
     .checkbox-container:hover input ~ .checkmark {
       background-color: var(--lavender-light);
       box-shadow: 0 0 0 3px rgba(147,112,219,0.2);
     }
-    
     .checkbox-container input:checked ~ .checkmark {
       background-color: var(--lavender-mid);
       box-shadow: 0 0 0 3px rgba(147,112,219,0.2);
     }
-    
-    /* Create a new simpler checkmark using a different approach */
     .checkbox-container input:checked ~ .checkmark:after {
       content: "";
       position: absolute;
       display: block;
-      left: 50%;
-      top: 40%;
-      transform: translate(-50%, -25%) rotate(45deg);
+      left: 9px;
+      top: 5px;
       width: 6px;
       height: 12px;
       border: solid white;
       border-width: 0 3px 3px 0;
+      transform: rotate(45deg);
       animation: checkmark-appear 0.3s ease forwards;
     }
-    
-    /* Animation for checkmark */
     @keyframes checkmark-appear {
-      0% { opacity: 0; transform: translate(-50%, -25%) rotate(45deg) scale(0); }
-      50% { opacity: 1; transform: translate(-50%, -25%) rotate(45deg) scale(1.2); }
-      100% { opacity: 1; transform: translate(-50%, -25%) rotate(45deg) scale(1); }
+      0% { opacity: 0; transform: rotate(45deg) scale(0); }
+      50% { opacity: 1; transform: rotate(45deg) scale(1.2); }
+      100% { opacity: 1; transform: rotate(45deg) scale(1); }
     }
-
+    
+    /* Language select */
     .language-select {
       width: 100%;
       padding: 12px 15px;
@@ -434,6 +405,8 @@
       box-shadow: 0 0 0 3px rgba(147,112,219,0.2);
       transform: translateY(-2px);
     }
+    
+    /* Button styling */
     .btn {
       background: var(--lavender-gradient);
       color: var(--white);
@@ -478,13 +451,15 @@
     .btn:disabled:before {
       display: none;
     }
+    
+    /* Progress bar */
     .progress-container {
       display: none;
       margin-top: 25px;
     }
     .progress-bar {
       height: 10px;
-      background-color: #E6E6FA; /* Explicitly using hex color instead of variable */
+      background-color: #E6E6FA;
       border-radius: 5px;
       overflow: hidden;
       box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
@@ -495,13 +470,12 @@
       top: 0;
       left: 0;
       height: 100%;
-      background: #7B68EE; /* Solid color that's easy to see */
+      background: #7B68EE;
       width: 0%;
       border-radius: 5px;
-      z-index: 2; /* Ensure it's above any other elements */
+      z-index: 2;
       transition: width 0.3s ease;
     }
-    /* Add animated stripes as a separate element */
     .progress::after {
       content: '';
       position: absolute;
@@ -524,6 +498,8 @@
       font-weight: 600;
       color: var(--lavender-dark);
     }
+    
+    /* Error message */
     .error-message {
       color: #e74c3c;
       margin-top: 15px;
@@ -534,6 +510,8 @@
       border-radius: 8px;
       border-left: 4px solid #e74c3c;
     }
+    
+    /* Results container */
     .result-container {
       display: none;
       background-color: var(--white);
@@ -550,6 +528,8 @@
       transform: translateY(-5px);
       box-shadow: 0 12px 30px rgba(72, 61, 139, 0.2);
     }
+    
+    /* Results tabs */
     .result-tabs {
       display: flex;
       margin-bottom: 20px;
@@ -579,10 +559,8 @@
       display: block;
       animation: fadeIn 0.5s ease;
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    
+    /* Transcript text */
     .transcript-text {
       line-height: 1.7;
       color: var(--text-primary);
@@ -598,6 +576,8 @@
       transform: translateY(-3px);
       box-shadow: 0 5px 15px rgba(72, 61, 139, 0.1);
     }
+    
+    /* Timestamps */
     .timestamps-container .transcript-text {
       margin-bottom: 30px;
     }
@@ -622,6 +602,8 @@
     .timestamp-text {
       flex: 1;
     }
+    
+    /* Speaker sections */
     .speaker-section {
       margin-bottom: 25px;
       padding: 15px;
@@ -634,6 +616,8 @@
       transform: translateY(-3px);
       box-shadow: 0 5px 15px rgba(72, 61, 139, 0.1);
     }
+    
+    /* Button group */
     .btn-group {
       display: flex;
       gap: 15px;
@@ -651,6 +635,8 @@
       transform: translateY(-2px);
       box-shadow: 0 6px 15px rgba(147,112,219,0.2);
     }
+    
+    /* Footer */
     footer {
       margin-top: auto;
       text-align: center;
@@ -696,7 +682,7 @@
       transform: translateY(-2px);
     }
     
-    /* Sunflower styling and positioning */
+    /* Sunflower styling */
     .sunflower-container {
       display: flex;
       align-items: center;
@@ -711,9 +697,6 @@
     .sunflower {
       width: 80px;
       height: 80px;
-      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="%23FFD700"/><g fill="%23FF8C00"><circle cx="50" cy="10" r="10"/><circle cx="50" cy="90" r="10"/><circle cx="10" cy="50" r="10"/><circle cx="90" cy="50" r="10"/><circle cx="22" cy="22" r="10"/><circle cx="78" cy="78" r="10"/><circle cx="22" cy="78" r="10"/><circle cx="78" cy="22" r="10"/></g></svg>');
-      background-size: contain;
-      background-repeat: no-repeat;
       position: absolute;
       opacity: 0.8;
       transition: transform 0.3s ease;
@@ -733,51 +716,36 @@
       transform: scaleX(-1) rotate(-10deg) scale(1.1);
     }
     
-    /* Corner sunflowers */
-    .corner-sunflower {
+    /* Corner decoration */
+    .corner-decoration {
       position: absolute;
-      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="%23FFD700"/><g fill="%23FF8C00"><circle cx="50" cy="10" r="10"/><circle cx="50" cy="90" r="10"/><circle cx="10" cy="50" r="10"/><circle cx="90" cy="50" r="10"/><circle cx="22" cy="22" r="10"/><circle cx="78" cy="78" r="10"/><circle cx="22" cy="78" r="10"/><circle cx="78" cy="22" r="10"/></g></svg>');
-      background-size: contain;
-      background-repeat: no-repeat;
-      transition: transform 0.3s ease;
-      z-index: 1;
       width: 30px;
       height: 30px;
+      transition: transform 0.3s ease;
+      z-index: 1;
     }
-    .corner-sunflower:hover {
+    .corner-decoration:hover {
       transform: rotate(15deg) scale(1.2);
     }
-    .corner-sunflower.top-left {
+    .corner-decoration.top-left {
       top: -15px;
       left: -15px;
       transform: rotate(-45deg);
     }
-    .corner-sunflower.top-left:hover {
-      transform: rotate(-30deg) scale(1.2);
-    }
-    .corner-sunflower.top-right {
+    .corner-decoration.top-right {
       top: -15px;
       right: -15px;
       transform: rotate(45deg);
     }
-    .corner-sunflower.top-right:hover {
-      transform: rotate(60deg) scale(1.2);
-    }
-    .corner-sunflower.bottom-left {
+    .corner-decoration.bottom-left {
       bottom: -15px;
       left: -15px;
       transform: rotate(-135deg);
     }
-    .corner-sunflower.bottom-left:hover {
-      transform: rotate(-120deg) scale(1.2);
-    }
-    .corner-sunflower.bottom-right {
+    .corner-decoration.bottom-right {
       bottom: -15px;
       right: -15px;
       transform: rotate(135deg);
-    }
-    .corner-sunflower.bottom-right:hover {
-      transform: rotate(150deg) scale(1.2);
     }
     
     /* Success Animation */
@@ -824,15 +792,10 @@
       }
     }
     
-    /* Note about server backend */
-    .server-note {
-      background-color: rgba(255, 235, 59, 0.1);
-      border-left: 4px solid #ffc107;
-      padding: 12px;
-      margin-bottom: 20px;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      color: #856404;
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     
     /* Basic responsiveness */
@@ -856,17 +819,22 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-  <!-- Background Sunflowers -->
-  <div class="bg-sunflower" style="top: 15%; left: 8%;"></div>
-  <div class="bg-sunflower" style="top: 35%; right: 5%;"></div>
-  <div class="bg-sunflower" style="top: 60%; left: 12%;"></div>
-  <div class="bg-sunflower" style="top: 75%; right: 10%;"></div>
-  <div class="bg-sunflower" style="top: 90%; left: 20%;"></div>
-
   <div class="container">
     <header>
       <div class="sunflower-container">
-        <div class="sunflower left"></div>
+        <svg class="sunflower left" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="25" fill="#FFD700"/>
+          <g fill="#FF8C00">
+            <circle cx="50" cy="10" r="10"/>
+            <circle cx="50" cy="90" r="10"/>
+            <circle cx="10" cy="50" r="10"/>
+            <circle cx="90" cy="50" r="10"/>
+            <circle cx="22" cy="22" r="10"/>
+            <circle cx="78" cy="78" r="10"/>
+            <circle cx="22" cy="78" r="10"/>
+            <circle cx="78" cy="22" r="10"/>
+          </g>
+        </svg>
         <div class="header-content">
           <h1>Audio Transcription Tool</h1>
           <p class="description">
@@ -874,14 +842,50 @@
             Powered by ElevenLabs' Scribe v1 API.
           </p>
         </div>
-        <div class="sunflower right"></div>
+        <svg class="sunflower right" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="25" fill="#FFD700"/>
+          <g fill="#FF8C00">
+            <circle cx="50" cy="10" r="10"/>
+            <circle cx="50" cy="90" r="10"/>
+            <circle cx="10" cy="50" r="10"/>
+            <circle cx="90" cy="50" r="10"/>
+            <circle cx="22" cy="22" r="10"/>
+            <circle cx="78" cy="78" r="10"/>
+            <circle cx="22" cy="78" r="10"/>
+            <circle cx="78" cy="22" r="10"/>
+          </g>
+        </svg>
       </div>
     </header>
 
     <div class="upload-container">
-      <!-- Corner Sunflowers -->
-      <div class="corner-sunflower top-left"></div>
-      <div class="corner-sunflower top-right"></div>
+      <!-- Corner decorations -->
+      <svg class="corner-decoration top-left" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="25" fill="#FFD700"/>
+        <g fill="#FF8C00">
+          <circle cx="50" cy="10" r="10"/>
+          <circle cx="50" cy="90" r="10"/>
+          <circle cx="10" cy="50" r="10"/>
+          <circle cx="90" cy="50" r="10"/>
+          <circle cx="22" cy="22" r="10"/>
+          <circle cx="78" cy="78" r="10"/>
+          <circle cx="22" cy="78" r="10"/>
+          <circle cx="78" cy="22" r="10"/>
+        </g>
+      </svg>
+      <svg class="corner-decoration top-right" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="25" fill="#FFD700"/>
+        <g fill="#FF8C00">
+          <circle cx="50" cy="10" r="10"/>
+          <circle cx="50" cy="90" r="10"/>
+          <circle cx="10" cy="50" r="10"/>
+          <circle cx="90" cy="50" r="10"/>
+          <circle cx="22" cy="22" r="10"/>
+          <circle cx="78" cy="78" r="10"/>
+          <circle cx="22" cy="78" r="10"/>
+          <circle cx="78" cy="22" r="10"/>
+        </g>
+      </svg>
       
       <!-- Upload Method Tabs -->
       <div class="upload-method-tabs">
@@ -936,9 +940,6 @@
       </div>
 
       <div class="options-container">
-        <!-- Corner Sunflower -->
-        <div class="corner-sunflower top-right"></div>
-        
         <h3 class="options-title">Transcription Options</h3>
         <div class="options-grid">
           <div class="option-item">
@@ -989,15 +990,49 @@
         <div class="status" id="status">Preparing transcription...</div>
       </div>
       
-      <!-- Corner Sunflowers -->
-      <div class="corner-sunflower bottom-left"></div>
-      <div class="corner-sunflower bottom-right"></div>
+      <!-- Corner decorations -->
+      <svg class="corner-decoration bottom-left" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="25" fill="#FFD700"/>
+        <g fill="#FF8C00">
+          <circle cx="50" cy="10" r="10"/>
+          <circle cx="50" cy="90" r="10"/>
+          <circle cx="10" cy="50" r="10"/>
+          <circle cx="90" cy="50" r="10"/>
+          <circle cx="22" cy="22" r="10"/>
+          <circle cx="78" cy="78" r="10"/>
+          <circle cx="22" cy="78" r="10"/>
+          <circle cx="78" cy="22" r="10"/>
+        </g>
+      </svg>
+      <svg class="corner-decoration bottom-right" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="25" fill="#FFD700"/>
+        <g fill="#FF8C00">
+          <circle cx="50" cy="10" r="10"/>
+          <circle cx="50" cy="90" r="10"/>
+          <circle cx="10" cy="50" r="10"/>
+          <circle cx="90" cy="50" r="10"/>
+          <circle cx="22" cy="22" r="10"/>
+          <circle cx="78" cy="78" r="10"/>
+          <circle cx="22" cy="78" r="10"/>
+          <circle cx="78" cy="22" r="10"/>
+        </g>
+      </svg>
     </div>
 
     <div class="result-container" id="result-container">
-      <!-- Corner Sunflowers -->
-      <div class="corner-sunflower top-left"></div>
-      <div class="corner-sunflower top-right"></div>
+      <svg class="corner-decoration top-right" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="25" fill="#FFD700"/>
+        <g fill="#FF8C00">
+          <circle cx="50" cy="10" r="10"/>
+          <circle cx="50" cy="90" r="10"/>
+          <circle cx="10" cy="50" r="10"/>
+          <circle cx="90" cy="50" r="10"/>
+          <circle cx="22" cy="22" r="10"/>
+          <circle cx="78" cy="78" r="10"/>
+          <circle cx="22" cy="78" r="10"/>
+          <circle cx="78" cy="22" r="10"/>
+        </g>
+      </svg>
       
       <div class="btn-group">
         <button id="copy-btn" class="btn">Copy to Clipboard</button>
@@ -1019,10 +1054,6 @@
       <div id="json" class="tab-content">
         <pre id="json-content"></pre>
       </div>
-      
-      <!-- Corner Sunflowers -->
-      <div class="corner-sunflower bottom-left"></div>
-      <div class="corner-sunflower bottom-right"></div>
     </div>
   </div>
 
@@ -1035,8 +1066,6 @@
         Powered by <a href="https://elevenlabs.io/" target="_blank" class="github-link">ElevenLabs</a>
       </div>
     </div>
-    <!-- Corner Sunflower -->
-    <div class="corner-sunflower top-right"></div>
   </footer>
   
   <!-- Success Animation Container -->
@@ -1044,6 +1073,8 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
+      console.log('Script loaded and running!');
+      
       // Elements
       const uploadBox = document.getElementById('upload-box');
       const fileInput = document.getElementById('file-input');
@@ -1092,10 +1123,18 @@
       let transcriptionData = null;
       let activeTab = 'text-only';
       let activeMethod = 'file-upload';
+      
+      // Log elements to check they exist
+      console.log('Elements loaded:');
+      console.log('transcribeBtn:', !!transcribeBtn);
+      console.log('fetchYoutubeBtn:', !!fetchYoutubeBtn);
+      console.log('methodTabs:', methodTabs.length);
 
       // Method tabs switching
       methodTabs.forEach(tab => {
         tab.addEventListener('click', function() {
+          console.log('Tab clicked:', tab.dataset.method);
+          
           methodTabs.forEach(t => t.classList.remove('active'));
           uploadMethods.forEach(m => m.classList.remove('active'));
 
@@ -1114,6 +1153,7 @@
 
       // YouTube URL fetching
       fetchYoutubeBtn.addEventListener('click', function() {
+        console.log('Fetch YouTube button clicked');
         const youtubeUrl = youtubeUrlInput.value.trim();
         
         if (!youtubeUrl || !isValidYoutubeUrl(youtubeUrl)) {
@@ -1220,6 +1260,7 @@
       });
 
       function handleFile(file) {
+        console.log('File selected:', file.name);
         // Check if file is audio or video
         if (!file.type.startsWith('audio/') && !file.type.startsWith('video/')) {
           showError('Please upload an audio or video file.');
@@ -1237,196 +1278,216 @@
         if (errorMessage.style.display === 'block') {
           errorMessage.style.display = 'none';
         }
+      }
+
+      function isValidYoutubeUrl(url) {
+        const regExp = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/;
+        return regExp.test(url);
+      }
+
+      // Handle transcription button click
+      transcribeBtn.addEventListener('click', function() {
+        console.log('Transcribe button clicked, method:', activeMethod);
         
-        // Add a subtle bounce animation to the file info
-        fileInfo.style.animation = 'none';
-        setTimeout(() => {
-          fileInfo.style.animation = 'fadeIn 0.5s ease';
-        }, 10);
-      }
-
-      transcribeBtn.addEventListener('click', startTranscription);
-
-      // Function to transcribe YouTube videos
-      async function transcribeYouTube(youtubeUrl) {
-        try {
-          // Show progress
-          progressContainer.style.display = 'block';
-          statusText.textContent = 'Preparing YouTube audio...';
-          
-          // Start progress animation
-          startProgressAnimation(30); // YouTube downloads typically take longer
-          
-          // Call your server - replace with your actual server URL
-          const response = await fetch(`${SERVER_URL}/extract-and-transcribe`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              youtubeUrl: youtubeUrl
-            })
-          });
-          
-          const data = await response.json();
-          
-          if (!data.success) {
-            throw new Error(data.error || 'Transcription failed');
-          }
-          
-          // Display video details
-          videoTitle.textContent = data.videoTitle || 'YouTube Video';
-          
-          // Handle successful transcription
-          transcriptionData = data.transcription;
-          displayResults(data.transcription);
-          
-          // Show results
-          resultContainer.style.display = 'block';
-          progressContainer.style.display = 'none';
-          
-          // Reset button
-          transcribeBtn.disabled = false;
-          
-          // Trigger success animation
-          createConfetti();
-          
-          // Scroll to results
-          resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          
-        } catch (error) {
-          console.error('YouTube transcription error:', error);
-          showError(error.message || 'Failed to transcribe YouTube video');
-          progressContainer.style.display = 'none';
-          transcribeBtn.disabled = false;
+        if (activeMethod === 'file-upload') {
+          transcribeFile();
+        } else if (activeMethod === 'youtube') {
+          transcribeYouTube();
         }
-      }
+      });
 
-      // Handle transcription start
-      function startTranscription() {
-        // Determine which method is active and check if we have valid input
-        if (activeMethod === 'file-upload' && !selectedFile) return;
-        if (activeMethod === 'youtube' && !selectedYoutubeUrl) return;
-      
+      // Function to transcribe files
+      function transcribeFile() {
+        if (!selectedFile) {
+          showError('Please select a file to transcribe');
+          return;
+        }
+        
+        console.log('Transcribing file:', selectedFile.name);
+        
         // Show progress container and disable button
         progressContainer.style.display = 'block';
         transcribeBtn.disabled = true;
         errorMessage.style.display = 'none';
         
-        if (activeMethod === 'youtube') {
-          // YouTube transcription
-          transcribeYouTube(selectedYoutubeUrl);
-          return;
-        }
-        
-        // For files, calculate realistic timing based on file size
+        // Calculate realistic timing based on file size
         const fileSize = selectedFile.size;
-        const bytesPerSecond = 250000;
+        const bytesPerSecond = 250000; // 250KB per second
         const estimatedSeconds = Math.max(5, Math.min(180, fileSize / bytesPerSecond));
         
         // Start progress animation
-        let transProgress = 0;
-        let at99Seconds = 0;
-        let stepsCompleted = 0;
+        startProgressAnimation(estimatedSeconds);
         
-        const totalSteps = Math.floor(estimatedSeconds * (1000 / 350));
-        const progressStep = 99 / totalSteps;
-        
-        const transcriptionInterval = setInterval(function() {
-          // Same progress animation code as before
-          if (transProgress < 99) {
-            stepsCompleted++;
-            const randomFactor = 1 + (Math.random() * 0.4 - 0.2) * (1 - transProgress/100);
-            const newProgress = Math.min(99, transProgress + (progressStep * randomFactor));
-            transProgress = newProgress;
-            progressBar.style.width = transProgress + '%';
-            void progressBar.offsetWidth;
-            statusText.textContent = `Transcribing: ${Math.floor(transProgress)}%`;
-          } else {
-            at99Seconds++;
-            if (at99Seconds === 4) {
-              statusText.textContent = "Almost ready!";
-            } else if (at99Seconds === 12) {
-              statusText.textContent = "Just a sec :)";
-            }
-          }
-        }, 350);
-      
         // Build form data
         const formData = new FormData();
         formData.append('file', selectedFile);
-        formData.append('model_id', 'scribe_v1');
-        formData.append('tag_audio_events', tagEventsCheckbox.checked);
         formData.append('diarize', diarizeCheckbox.checked);
+        formData.append('tag_audio_events', tagEventsCheckbox.checked);
         if (languageSelect.value) {
           formData.append('language_code', languageSelect.value);
         }
-      
-        // Send to your server instead of directly to ElevenLabs
+        
+        // Send the file to the server
         fetch(`${SERVER_URL}/transcribe-file`, {
           method: 'POST',
           body: formData
         })
-        .then(response => response.json())
+        .then(response => {
+          if (!response.ok) {
+            return response.json().then(data => {
+              throw new Error(data.error || 'Error processing file');
+            });
+          }
+          return response.json();
+        })
         .then(data => {
-          // Stop progress animation
-          clearInterval(transcriptionInterval);
+          console.log('Transcription successful:', data);
           
-          // Handle successful response
           if (data.success) {
-            // Set progress to 100%
+            // Complete progress bar
             progressBar.style.width = '100%';
-            statusText.textContent = 'Transcription successful!';
             
-            // Process the results
+            // Display results
             transcriptionData = data.transcription;
             displayResults(data.transcription);
             
-            // Show results after a short delay
-            setTimeout(() => {
-              resultContainer.style.display = 'block';
-              progressContainer.style.display = 'none';
-              transcribeBtn.disabled = false;
-              createConfetti();
-              resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 1000);
+            // Show results container
+            resultContainer.style.display = 'block';
+            
+            // Hide progress container
+            progressContainer.style.display = 'none';
+            
+            // Re-enable button
+            transcribeBtn.disabled = false;
+            
+            // Create success animation
+            createConfetti();
+            
+            // Scroll to results
+            resultContainer.scrollIntoView({ behavior: 'smooth' });
           } else {
             throw new Error(data.error || 'Transcription failed');
           }
         })
         .catch(error => {
-          // Handle errors
-          clearInterval(transcriptionInterval);
+          console.error('Transcription error:', error);
           progressContainer.style.display = 'none';
           transcribeBtn.disabled = false;
-          showError(error.message || 'Transcription failed');
-          console.error('Transcription error:', error);
+          showError(error.message || 'Failed to transcribe audio');
         });
       }
 
-        // Send the request
-        xhr.send(formData);
+      // Function to transcribe YouTube videos
+      function transcribeYouTube() {
+        if (!selectedYoutubeUrl) {
+          showError('Please enter a YouTube URL');
+          return;
+        }
+        
+        console.log('Transcribing YouTube video:', selectedYoutubeUrl);
+        
+        // Show progress container and disable button
+        progressContainer.style.display = 'block';
+        transcribeBtn.disabled = true;
+        errorMessage.style.display = 'none';
+        
+        // Start progress animation - YouTube videos typically take longer
+        startProgressAnimation(30);
+        
+        // Call your server
+        fetch(`${SERVER_URL}/extract-and-transcribe`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            youtubeUrl: selectedYoutubeUrl
+          })
+        })
+        .then(response => {
+          if (!response.ok) {
+            return response.json().then(data => {
+              throw new Error(data.error || 'Error processing YouTube video');
+            });
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log('YouTube transcription successful:', data);
+          
+          if (data.success) {
+            // Complete progress bar
+            progressBar.style.width = '100%';
+            
+            // Update video title if available
+            if (data.videoTitle) {
+              videoTitle.textContent = data.videoTitle;
+            }
+            
+            // Display results
+            transcriptionData = data.transcription;
+            displayResults(data.transcription);
+            
+            // Show results container
+            resultContainer.style.display = 'block';
+            
+            // Hide progress container
+            progressContainer.style.display = 'none';
+            
+            // Re-enable button
+            transcribeBtn.disabled = false;
+            
+            // Create success animation
+            createConfetti();
+            
+            // Scroll to results
+            resultContainer.scrollIntoView({ behavior: 'smooth' });
+          } else {
+            throw new Error(data.error || 'Transcription failed');
+          }
+        })
+        .catch(error => {
+          console.error('YouTube transcription error:', error);
+          progressContainer.style.display = 'none';
+          transcribeBtn.disabled = false;
+          showError(error.message || 'Failed to transcribe YouTube video');
+        });
       }
 
-      // Add this function to create a smoother progress animation for YouTube
+      // Progress bar animation
       function startProgressAnimation(estimatedSeconds) {
+        // Reset progress bar
         progressBar.style.width = '0%';
-        let progress = 0;
         
+        let progress = 0;
         const totalSteps = Math.floor(estimatedSeconds * (1000 / 350));
         const progressStep = 99 / totalSteps;
         
+        console.log(`Starting progress animation: ${estimatedSeconds}s, ${totalSteps} steps, ${progressStep.toFixed(2)}% per step`);
+        
         const interval = setInterval(() => {
           if (progress < 99) {
-            progress += progressStep;
+            // Add a bit of randomness to make it look more natural
+            const randomFactor = 1 + (Math.random() * 0.4 - 0.2) * (1 - progress/100);
+            progress += progressStep * randomFactor;
+            progress = Math.min(99, progress);
+            
+            // Update progress bar
             progressBar.style.width = `${progress}%`;
             
-            if (progress > 30 && progress < 60) {
-              statusText.textContent = 'Downloading YouTube audio...';
-            } else if (progress >= 60 && progress < 85) {
-              statusText.textContent = 'Processing audio...';
-            } else if (progress >= 85) {
-              statusText.textContent = 'Generating transcription...';
+            // Update status text based on progress
+            if (activeMethod === 'youtube') {
+              if (progress < 30) {
+                statusText.textContent = 'Fetching YouTube video...';
+              } else if (progress < 60) {
+                statusText.textContent = 'Extracting audio...';
+              } else if (progress < 90) {
+                statusText.textContent = 'Transcribing audio...';
+              } else {
+                statusText.textContent = 'Finalizing transcription...';
+              }
+            } else {
+              statusText.textContent = `Transcribing: ${Math.floor(progress)}%`;
             }
           } else {
             clearInterval(interval);
@@ -1434,10 +1495,11 @@
           }
         }, 350);
         
-        // Store the interval to clear it if needed
-        window.ytProgressInterval = interval;
+        // Store the interval ID to clear it if needed
+        window.currentProgressInterval = interval;
       }
 
+      // Display transcription results
       function displayResults(data) {
         // Text Only Tab
         transcriptText.textContent = data.text || '';
@@ -1453,6 +1515,7 @@
         jsonContent.textContent = JSON.stringify(data, null, 2);
       }
 
+      // Display timestamps
       function displayTimestamps(data) {
         timestampsContainer.innerHTML = '';
         let currentSpeaker = '';
@@ -1592,25 +1655,24 @@
         return speakerId.replace('speaker_', 'Speaker ');
       }
       
-      function isValidYoutubeUrl(url) {
-        const regExp = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/;
-        return regExp.test(url);
-      }
-      
       function showError(message) {
+        console.error('Error:', message);
         errorMessage.textContent = message;
         errorMessage.style.display = 'block';
         
-        // Add a little shake animation
+        // Scroll to error message
+        errorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Add shake animation
         errorMessage.classList.add('shake');
         setTimeout(() => {
           errorMessage.classList.remove('shake');
         }, 500);
       }
       
-      // Add animation keyframes dynamically
+      // Add shake animation
       const style = document.createElement('style');
-      style.innerHTML = `
+      style.textContent = `
         @keyframes shake {
           0%, 100% { transform: translateX(0); }
           10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
@@ -1621,6 +1683,8 @@
         }
       `;
       document.head.appendChild(style);
+      
+      console.log('Script initialization complete');
     });
   </script>
 </body>
