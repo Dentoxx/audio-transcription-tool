@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Transcription Tool</title>
+    <style>
+        :root {
+            --lavender-light: #E6E6FA;
+            --lavender-mid: #9370DB;
+            --lavender-dark: #483D8B;
+            --lavender-pale: #F0F0FF;
+            --white: #FFFFFF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--lavender-pale);
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: var(--lavender-dark);
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+
+        .description {
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+        }
+
+        .upload-container {
+            background-color: var(--white);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(147, 112, 219, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .upload-box {
+            border: 3px dashed var(--lavender-mid);
+            border-radius: 10px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: var(--lavender-light);
+            margin-bottom: 20px;
+        }
+
+        .upload-box:hover {
+            background-color: rgba(147, 112, 219, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 50px;
+            color: var(--lavender-mid);
+            margin-bottom: 15px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .options-container {
+            margin-bottom: 20px;
+        }
+
+        .options-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--lavender-dark);
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .checkbox-container {
+            position: relative;
+            padding-left: 35px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .checkbox-container input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 25px;
+            width: 25px;
+            background-color: var(--white);
+            border: 2px solid var(--lavender-mid);
+            border-radius: 5px;
+        }
+
+        .checkbox-container:hover input ~ .checkmark {
+            background-color: var(--lavender-light);
+        }
+
+        .checkbox-container input:checked ~ .checkmark {
+            background-color: var(--lavender-mid);
+        }
+
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+
+        .checkbox-container input:checked ~ .checkmark:after {
+            display: block;
+        }
+
+        .checkbox-container .checkmark:after {
+            left: 9px;
+            top: 5px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 3px 3px 0;
+            transform: rotate(45deg);
+        }
+
+        .language-select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid var(--lavender-mid);
+            background-color: var(--white);
+            font-size: 16px;
+            outline: none;
+            margin-top: 10px;
+        }
+
+        .language-select:focus {
+            border-color: var(--lavender-dark);
+        }
+
+        .btn {
+            background-color: var(--lavender-mid);
+            color: var(--white);
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background-color: var(--lavender-dark);
+        }
+
+        .btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .api-key-container {
+            margin-bottom: 20px;
+        }
+
+        .api-key-input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid var(--lavender-mid);
+            background-color: var(--white);
+            font-size: 16px;
+            outline: none;
+        }
+
+        .api-key-input:focus {
+            border-color: var(--lavender-dark);
+        }
+
+        .progress-container {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background-color: var(--lavender-light);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background-color: var(--lavender-mid);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .status {
+            margin-top: 10px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--lavender-dark);
+        }
+
+        .result-container {
+            display: none;
+            background-color: var(--white);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(147, 112, 219, 0.1);
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+
+        .result-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--lavender-light);
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            color: #666;
+            font-weight: 600;
+            border-bottom: 3px solid transparent;
+            margin-right: 15px;
+        }
+
+        .tab.active {
+            color: var(--lavender-dark);
+            border-bottom: 3px solid var(--lavender-mid);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .transcript-text {
+            line-height: 1.6;
+            color: #333;
+            white-space: pre-wrap;
+        }
+
+        .timestamps-container .transcript-text {
+            margin-bottom: 30px;
+        }
+
+        .timestamp-item {
+            margin-bottom: 15px;
+            display: flex;
+        }
+
+        .timestamp {
+            min-width: 100px;
+            color: var(--lavender-dark);
+            font-weight: 600;
+            margin-right: 15px;
+        }
+
+        .timestamp-text {
+            flex: 1;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn-secondary {
+            background-color: var(--lavender-light);
+            color: var(--lavender-dark);
+            border: 2px solid var(--lavender-mid);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--lavender-mid);
+            color: var(--white);
+        }
+
+        .error-message {
+            color: #e74c3c;
+            margin-top: 10px;
+            font-weight: 600;
+            display: none;
+        }
+
+        footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 20px 0;
+            color: #666;
+        }
+
+        .github-link {
+            color: var(--lavender-dark);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .github-link:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Audio Transcription Tool</h1>
+            <p class="description">Upload your audio or video files and get accurate transcriptions powered by ElevenLabs' Scribe v1 API.</p>
+        </header>
+
+        <div class="upload-container">
+            <div class="api-key-container">
+                <label for="api-key" class="options-title">Your ElevenLabs API Key</label>
+                <input type="password" id="api-key" class="api-key-input" placeholder="Enter your ElevenLabs API key" required>
+                <p style="margin-top: 5px; font-size: 14px; color: #666;">Your API key is never stored on our servers. It's only used locally to make API calls.</p>
+            </div>
+
+            <div class="upload-box" id="upload-box">
+                <div class="upload-icon">📂</div>
+                <h3>Drag & Drop or Click to Upload</h3>
+                <p>Supported formats: MP3, WAV, MP4, AAC, FLAC and more</p>
+                <input type="file" id="file-input" class="file-input" accept="audio/*,video/*">
+            </div>
+
+            <div id="file-info" style="margin-bottom: 20px; display: none;">
+                <p><strong>Selected file:</strong> <span id="file-name"></span></p>
+                <p><strong>Size:</strong> <span id="file-size"></span></p>
+            </div>
+
+            <div class="options-container">
+                <h3 class="options-title">Transcription Options</h3>
+                <div class="options-grid">
+                    <div class="option-item">
+                        <label class="checkbox-container">Include timestamps
+                            <input type="checkbox" id="timestamps-checkbox" checked>
+                            <span class="checkmark"></span>
+                        </label>
+                    </div>
+                    <div class="option-item">
+                        <label class="checkbox-container">Identify speakers (diarization)
+                            <input type="checkbox" id="diarize-checkbox" checked>
+                            <span class="checkmark"></span>
+                        </label>
+                    </div>
+                    <div class="option-item">
+                        <label class="checkbox-container">Tag audio events (laughter, applause, etc.)
+                            <input type="checkbox" id="tag-events-checkbox" checked>
+                            <span class="checkmark"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <label for="language-select" class="options-title">Language (optional)</label>
+                    <select id="language-select" class="language-select">
+                        <option value="">Auto-detect language</option>
+                        <option value="eng">English (eng)</option>
+                        <option value="spa">Spanish (spa)</option>
+                        <option value="fra">French (fra)</option>
+                        <option value="deu">German (deu)</option>
+                        <option value="ita">Italian (ita)</option>
+                        <option value="jpn">Japanese (jpn)</option>
+                        <option value="por">Portuguese (por)</option>
+                        <option value="rus">Russian (rus)</option>
+                        <option value="cmn">Mandarin Chinese (cmn)</option>
+                        <option value="hin">Hindi (hin)</option>
+                        <!-- Add more languages as needed -->
+                    </select>
+                </div>
+            </div>
+
+            <button id="transcribe-btn" class="btn" disabled>Transcribe Audio</button>
+            <div class="error-message" id="error-message"></div>
+
+            <div class="progress-container" id="progress-container">
+                <div class="progress-bar">
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="status" id="status">Preparing transcription...</div>
+            </div>
+        </div>
+
+        <div class="result-container" id="result-container">
+            <div class="result-tabs">
+                <div class="tab active" data-tab="text-only">Text Only</div>
+                <div class="tab" data-tab="timestamps">With Timestamps</div>
+                <div class="tab" data-tab="json">JSON</div>
+            </div>
+
+            <div id="text-only" class="tab-content active">
+                <div class="transcript-text" id="transcript-text"></div>
+            </div>
+
+            <div id="timestamps" class="tab-content">
+                <div id="timestamps-container"></div>
+            </div>
+
+            <div id="json" class="tab-content">
+                <pre id="json-content" style="white-space: pre-wrap; max-height: 500px; overflow-y: auto;"></pre>
+            </div>
+
+            <div class="btn-group">
+                <button id="copy-btn" class="btn">Copy to Clipboard</button>
+                <button id="download-btn" class="btn btn-secondary">Download as Text File</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Created with ❤️ | Powered by <a href="https://beta.elevenlabs.io" target="_blank" class="github-link">ElevenLabs</a></p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elements
+            const uploadBox = document.getElementById('upload-box');
+            const fileInput = document.getElementById('file-input');
+            const fileInfo = document.getElementById('file-info');
+            const fileName = document.getElementById('file-name');
+            const fileSize = document.getElementById('file-size');
+            const transcribeBtn = document.getElementById('transcribe-btn');
+            const apiKeyInput = document.getElementById('api-key');
+            const progressContainer = document.getElementById('progress-container');
+            const progressBar = document.getElementById('progress');
+            const statusText = document.getElementById('status');
+            const resultContainer = document.getElementById('result-container');
+            const transcriptText = document.getElementById('transcript-text');
+            const timestampsContainer = document.getElementById('timestamps-container');
+            const jsonContent = document.getElementById('json-content');
+            const copyBtn = document.getElementById('copy-btn');
+            const downloadBtn = document.getElementById('download-btn');
+            const errorMessage = document.getElementById('error-message');
+            
+            // Tabs
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            // Options
+            const timestampsCheckbox = document.getElementById('timestamps-checkbox');
+            const diarizeCheckbox = document.getElementById('diarize-checkbox');
+            const tagEventsCheckbox = document.getElementById('tag-events-checkbox');
+            const languageSelect = document.getElementById('language-select');
+            
+            let selectedFile = null;
+            let transcriptionData = null;
+            let activeTab = 'text-only';
+            
+            // Handle drag and drop
+            uploadBox.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadBox.style.backgroundColor = 'rgba(147, 112, 219, 0.2)';
+            });
+            
+            uploadBox.addEventListener('dragleave', function() {
+                uploadBox.style.backgroundColor = 'var(--lavender-light)';
+            });
+            
+            uploadBox.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadBox.style.backgroundColor = 'var(--lavender-light)';
+                if (e.dataTransfer.files.length > 0) {
+                    handleFile(e.dataTransfer.files[0]);
+                }
+            });
+            
+            uploadBox.addEventListener('click', function() {
+                fileInput.click();
+            });
+            
+            fileInput.addEventListener('change', function() {
+                if (fileInput.files.length > 0) {
+                    handleFile(fileInput.files[0]);
+                }
+            });
+            
+            apiKeyInput.addEventListener('input', validateForm);
+            
+            function handleFile(file) {
+                // Check if file is audio or video
+                if (!file.type.startsWith('audio/') && !file.type.startsWith('video/')) {
+                    showError('Please upload an audio or video file.');
+                    return;
+                }
+                
+                selectedFile = file;
+                fileName.textContent = file.name;
+                fileSize.textContent = formatFileSize(file.size);
+                fileInfo.style.display = 'block';
+                validateForm();
+            }
+            
+            function validateForm() {
+                transcribeBtn.disabled = !selectedFile || !apiKeyInput.value.trim();
+                if (errorMessage.style.display === 'block') {
+                    errorMessage.style.display = 'none';
+                }
+            }
+            
+            transcribeBtn.addEventListener('click', startTranscription);
+            
+            function startTranscription() {
+                if (!selectedFile || !apiKeyInput.value.trim()) {
+                    return;
+                }
+                
+                // Show progress
+                progressContainer.style.display = 'block';
+                transcribeBtn.disabled = true;
+                errorMessage.style.display = 'none';
+                
+                // Build form data
+                const formData = new FormData();
+                formData.append('file', selectedFile);
+                formData.append('model_id', 'scribe_v1');
+                formData.append('tag_audio_events', tagEventsCheckbox.checked);
+                formData.append('diarize', diarizeCheckbox.checked);
+                
+                if (languageSelect.value) {
+                    formData.append('language_code', languageSelect.value);
+                }
+                
+                // Start simulated progress
+                let progress = 0;
+                const progressInterval = setInterval(() => {
+                    progress += 1;
+                    if (progress >= 95) {
+                        clearInterval(progressInterval);
+                    }
+                    progressBar.style.width = `${progress}%`;
+                }, 300);
+                
+                // API call to ElevenLabs
+                statusText.textContent = 'Uploading and transcribing...';
+                
+                fetch('https://api.elevenlabs.io/v1/speech-to-text', {
+                    method: 'POST',
+                    headers: {
+                        'xi-api-key': apiKeyInput.value.trim()
+                    },
+                    body: formData
+                })
+                .then(response => {
+                    clearInterval(progressInterval);
+                    
+                    if (!response.ok) {
+                        return response.json().then(error => {
+                            throw new Error(error.detail?.message || 'Transcription failed. Please check your API key and try again.');
+                        });
+                    }
+                    
+                    progressBar.style.width = '100%';
+                    statusText.textContent = 'Transcription successful!';
+                    
+                    return response.json();
+                })
+                .then(data => {
+                    // Store the transcription data
+                    transcriptionData = data;
+                    
+                    // Display the results
+                    displayResults(data);
+                    
+                    setTimeout(() => {
+                        resultContainer.style.display = 'block';
+                        progressContainer.style.display = 'none';
+                        transcribeBtn.disabled = false;
+                    }, 1000);
+                })
+                .catch(error => {
+                    clearInterval(progressInterval);
+                    progressContainer.style.display = 'none';
+                    transcribeBtn.disabled = false;
+                    showError(error.message);
+                    console.error('Transcription error:', error);
+                });
+            }
+            
+            function displayResults(data) {
+                // Text only tab
+                transcriptText.textContent = data.text;
+                
+                // Timestamps tab
+                if (timestampsCheckbox.checked && data.words && data.words.length > 0) {
+                    displayTimestamps(data);
+                } else {
+                    document.getElementById('timestamps-container').innerHTML = '<p>Timestamps were not requested or not available in the transcription.</p>';
+                }
+                
+                // JSON tab
+                jsonContent.textContent = JSON.stringify(data, null, 2);
+            }
+            
+            function displayTimestamps(data) {
+                timestampsContainer.innerHTML = '';
+                
+                let currentSpeaker = '';
+                let speakerDiv = null;
+                
+                // Group by speakers if diarization is enabled
+                data.words.forEach((word, index) => {
+                    if (word.type === 'word') {
+                        // Check if speaker changed
+                        if (diarizeCheckbox.checked && word.speaker_id !== currentSpeaker) {
+                            currentSpeaker = word.speaker_id;
+                            
+                            // Create new speaker section
+                            speakerDiv = document.createElement('div');
+                            speakerDiv.className = 'speaker-section';
+                            speakerDiv.innerHTML = `<h4 style="color: var(--lavender-dark); margin-bottom: 10px;">${formatSpeakerId(currentSpeaker)}</h4>`;
+                            timestampsContainer.appendChild(speakerDiv);
+                        }
+                        
+                        // Create timestamp item
+                        const timestampItem = document.createElement('div');
+                        timestampItem.className = 'timestamp-item';
+                        
+                        const timestamp = document.createElement('div');
+                        timestamp.className = 'timestamp';
+                        timestamp.textContent = formatTime(word.start);
+                        
+                        const text = document.createElement('div');
+                        text.className = 'timestamp-text';
+                        text.textContent = word.text;
+                        
+                        timestampItem.appendChild(timestamp);
+                        timestampItem.appendChild(text);
+                        
+                        if (speakerDiv && diarizeCheckbox.checked) {
+                            speakerDiv.appendChild(timestampItem);
+                        } else {
+                            timestampsContainer.appendChild(timestampItem);
+                        }
+                    }
+                });
+            }
+            
+            // Tab switching
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    tab.classList.add('active');
+                    activeTab = tab.dataset.tab;
+                    document.getElementById(activeTab).classList.add('active');
+                });
+            });
+            
+            // Copy to clipboard
+            copyBtn.addEventListener('click', function() {
+                let content = '';
+                
+                switch (activeTab) {
+                    case 'text-only':
+                        content = transcriptText.textContent;
+                        break;
+                    case 'timestamps':
+                        const items = document.querySelectorAll('.timestamp-item');
+                        items.forEach(item => {
+                            const timestamp = item.querySelector('.timestamp').textContent;
+                            const text = item.querySelector('.timestamp-text').textContent;
+                            content += `[${timestamp}] ${text}\n`;
+                        });
+                        break;
+                    case 'json':
+                        content = jsonContent.textContent;
+                        break;
+                }
+                
+                navigator.clipboard.writeText(content)
+                    .then(() => {
+                        const originalText = copyBtn.textContent;
+                        copyBtn.textContent = 'Copied!';
+                        setTimeout(() => {
+                            copyBtn.textContent = originalText;
+                        }, 2000);
+                    })
+                    .catch(err => {
+                        showError('Failed to copy content to clipboard.');
+                        console.error('Copy error:', err);
+                    });
+            });
+            
+            // Download as text file
+            downloadBtn.addEventListener('click', function() {
+                let content = '';
+                let filename = '';
+                let fileType = 'text/plain';
+                
+                switch (activeTab) {
+                    case 'text-only':
+                        content = transcriptText.textContent;
+                        filename = 'transcript.txt';
+                        break;
+                    case 'timestamps':
+                        const items = document.querySelectorAll('.timestamp-item');
+                        items.forEach(item => {
+                            const timestamp = item.querySelector('.timestamp').textContent;
+                            const text = item.querySelector('.timestamp-text').textContent;
+                            content += `[${timestamp}] ${text}\n`;
+                        });
+                        filename = 'transcript_with_timestamps.txt';
+                        break;
+                    case 'json':
+                        content = jsonContent.textContent;
+                        filename = 'transcript.json';
+                        fileType = 'application/json';
+                        break;
+                }
+                
+                const blob = new Blob([content], { type: fileType });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+            
+            // Helper functions
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+            
+            function formatTime(seconds) {
+                const minutes = Math.floor(seconds / 60);
+                const remainingSeconds = Math.floor(seconds % 60);
+                const milliseconds = Math.floor((seconds % 1) * 1000);
+                
+                return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(3, '0')}`;
+            }
+            
+            function formatSpeakerId(speakerId) {
+                return speakerId.replace('speaker_', 'Speaker ');
+            }
+            
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
