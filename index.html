@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Audio Transcription Tool</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
       --lavender-light: #E6E6FA;
@@ -19,952 +20,361 @@
       --youtube-red: #FF0000;
       --youtube-gradient: linear-gradient(135deg, #FF0000, #CC0000);
     }
+    
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
+    
     body {
-      background: radial-gradient(circle at top right, rgba(230,230,250,0.8), rgba(240,240,255,0.3)), var(--lavender-pale);
+      background-color: var(--lavender-pale);
       padding: 20px;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       color: var(--text-primary);
-      position: relative;
-      overflow-x: hidden;
     }
     
-    /* Container */
     .container {
-      max-width: 900px;
+      max-width: 800px;
       margin: 0 auto;
       width: 100%;
-      position: relative;
-      z-index: 1;
     }
     
-    /* Header */
     header {
       text-align: center;
-      margin-bottom: 40px;
-      color: var(--lavender-dark);
-      position: relative;
+      margin-bottom: 30px;
     }
+    
     h1 {
+      color: var(--lavender-dark);
       margin-bottom: 10px;
-      font-size: 2.8rem;
-      font-weight: 800;
-      background: var(--lavender-gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      letter-spacing: -0.5px;
+      font-size: 2.5rem;
     }
+    
     .description {
       color: var(--text-secondary);
-      max-width: 600px;
-      margin: 0 auto;
-      font-size: 1.1rem;
-      line-height: 1.5;
     }
     
-    /* Main content container */
-    .upload-container {
+    .main-panel {
       background-color: var(--white);
-      border-radius: 20px;
-      padding: 35px;
+      border-radius: 10px;
+      padding: 25px;
       box-shadow: var(--box-shadow);
-      margin-bottom: 30px;
-      border: 1px solid rgba(147,112,219,0.1);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      position: relative;
-    }
-    .upload-container:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 12px 30px rgba(72, 61, 139, 0.2);
-    }
-    
-    /* Tabs for upload method */
-    .upload-method-tabs {
-      display: flex;
-      margin-bottom: 20px;
-      border-bottom: 2px solid var(--lavender-light);
-    }
-    .method-tab {
-      padding: 12px 25px;
-      cursor: pointer;
-      color: var(--text-secondary);
-      font-weight: 600;
-      border-bottom: 3px solid transparent;
-      margin-right: 15px;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .method-tab:hover {
-      color: var(--lavender-accent);
-      transform: translateY(-3px);
-    }
-    .method-tab.active {
-      color: var(--lavender-dark);
-      border-bottom: 3px solid var(--lavender-mid);
-    }
-    .method-tab.youtube {
-      color: var(--youtube-red);
-    }
-    .method-tab.youtube.active {
-      border-bottom: 3px solid var(--youtube-red);
-    }
-    .method-tab i {
-      font-size: 1.2rem;
-    }
-    .upload-method {
-      display: none;
-    }
-    .upload-method.active {
-      display: block;
-      animation: fadeIn 0.5s ease;
-    }
-    
-    /* File upload box */
-    .upload-box {
-      border: 3px dashed var(--lavender-mid);
-      border-radius: 12px;
-      padding: 40px 20px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      background-color: var(--lavender-light);
-      margin-bottom: 20px;
-      position: relative;
-      overflow: hidden;
-    }
-    .upload-box:hover {
-      background-color: rgba(147,112,219,0.1);
-      transform: scale(1.01);
-    }
-    .upload-box:after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(45deg, rgba(147,112,219,0.1) 25%, transparent 25%, transparent 50%, rgba(147,112,219,0.1) 50%, rgba(147,112,219,0.1) 75%, transparent 75%, transparent);
-      background-size: 20px 20px;
-      opacity: 0.3;
-      z-index: 0;
-    }
-    .upload-icon {
-      font-size: 60px;
-      color: var(--lavender-mid);
-      margin-bottom: 15px;
-      position: relative;
-      z-index: 1;
-      transition: transform 0.3s ease;
-    }
-    .upload-box:hover .upload-icon {
-      transform: scale(1.1) rotate(5deg);
-    }
-    .upload-box h3 {
-      position: relative;
-      z-index: 1;
-      margin-bottom: 8px;
-      color: var(--lavender-dark);
-    }
-    .upload-box p {
-      position: relative;
-      z-index: 1;
-      color: var(--text-secondary);
-    }
-    .file-input {
-      display: none;
-    }
-    
-    /* File info display */
-    .file-info {
-      background-color: rgba(230,230,250,0.3);
-      padding: 15px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      display: none;
-      border: 1px solid rgba(147,112,219,0.1);
-      transition: transform 0.3s ease;
-    }
-    .file-info:hover {
-      transform: translateX(5px);
-    }
-    .file-info p {
-      margin-bottom: 5px;
-    }
-    
-    /* YouTube input styling */
-    .youtube-container {
       margin-bottom: 20px;
     }
-    .youtube-input-group {
+    
+    .tabs {
       display: flex;
-      margin-bottom: 15px;
-      gap: 10px;
-    }
-    .youtube-input {
-      flex: 1;
-      padding: 12px 15px;
-      border-radius: 8px;
-      border: 2px solid var(--lavender-mid);
-      background-color: var(--white);
-      font-size: 16px;
-      outline: none;
-      color: var(--text-primary);
-      transition: all 0.2s ease;
-    }
-    .youtube-input:focus {
-      border-color: var(--youtube-red);
-      box-shadow: 0 0 0 3px rgba(255,0,0,0.1);
-      transform: translateY(-2px);
-    }
-    .youtube-btn {
-      background: var(--youtube-gradient);
-      color: var(--white);
-      padding: 0 20px;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .youtube-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(255,0,0,0.2);
-    }
-    .youtube-btn i {
-      font-size: 1.2rem;
-    }
-    .example-link {
-      display: block;
-      font-size: 0.9rem;
-      color: var(--text-secondary);
-      margin-top: 5px;
-    }
-    
-    /* Video preview */
-    .video-preview {
-      margin-top: 20px;
-      display: none;
-      animation: fadeIn 0.5s ease;
-    }
-    .video-info {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      margin-bottom: 15px;
-      padding: 15px;
-      background-color: rgba(230,230,250,0.3);
-      border-radius: 10px;
-      border: 1px solid rgba(147,112,219,0.1);
-    }
-    .video-thumbnail {
-      width: 120px;
-      height: 68px;
-      background-color: #ddd;
-      border-radius: 6px;
-      overflow: hidden;
-    }
-    .video-thumbnail img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .video-details {
-      flex: 1;
-    }
-    .video-title {
-      font-weight: 600;
-      margin-bottom: 5px;
-      color: var(--text-primary);
-    }
-    .video-channel, .video-duration {
-      font-size: 0.9rem;
-      color: var(--text-secondary);
-    }
-    
-    /* Options styling */
-    .options-container {
-      margin-bottom: 25px;
-      background-color: rgba(230,230,250,0.3);
-      padding: 20px;
-      border-radius: 12px;
-      border: 1px solid rgba(147,112,219,0.1);
-      transition: transform 0.3s ease;
-      position: relative;
-    }
-    .options-container:hover {
-      transform: translateY(-3px);
-    }
-    .options-title {
-      font-weight: 600;
-      margin-bottom: 15px;
-      color: var(--lavender-dark);
-      font-size: 1.1rem;
-    }
-    .options-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-    }
-    .option-item {
-      display: flex;
-      align-items: center;
-    }
-    
-    /* Checkbox styling */
-    .checkbox-container {
-      position: relative;
-      padding-left: 35px;
-      cursor: pointer;
-      user-select: none;
-      font-weight: 500;
-      transition: transform 0.2s ease;
-      display: flex;
-      align-items: center;
-    }
-    .checkbox-container:hover {
-      transform: translateX(3px);
-    }
-    .checkbox-container input {
-      position: absolute;
-      opacity: 0;
-      cursor: pointer;
-      height: 0;
-      width: 0;
-    }
-    .checkmark {
-      position: absolute;
-      left: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      height: 24px;
-      width: 24px;
-      background-color: var(--white);
-      border: 2px solid var(--lavender-mid);
-      border-radius: 5px;
-      box-sizing: border-box;
-    }
-    .checkbox-container:hover input ~ .checkmark {
-      background-color: var(--lavender-light);
-      box-shadow: 0 0 0 3px rgba(147,112,219,0.2);
-    }
-    .checkbox-container input:checked ~ .checkmark {
-      background-color: var(--lavender-mid);
-      box-shadow: 0 0 0 3px rgba(147,112,219,0.2);
-    }
-    .checkbox-container input:checked ~ .checkmark:after {
-      content: "";
-      position: absolute;
-      display: block;
-      left: 9px;
-      top: 5px;
-      width: 6px;
-      height: 12px;
-      border: solid white;
-      border-width: 0 3px 3px 0;
-      transform: rotate(45deg);
-      animation: checkmark-appear 0.3s ease forwards;
-    }
-    @keyframes checkmark-appear {
-      0% { opacity: 0; transform: rotate(45deg) scale(0); }
-      50% { opacity: 1; transform: rotate(45deg) scale(1.2); }
-      100% { opacity: 1; transform: rotate(45deg) scale(1); }
-    }
-    
-    /* Language select */
-    .language-select {
-      width: 100%;
-      padding: 12px 15px;
-      border-radius: 8px;
-      border: 2px solid var(--lavender-mid);
-      background-color: var(--white);
-      font-size: 16px;
-      outline: none;
-      margin-top: 10px;
-      color: var(--text-primary);
-      transition: all 0.2s ease;
-      -webkit-appearance: none;
-      background-image: url("data:image/svg+xml;utf8,<svg fill='%239370DB' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
-      background-repeat: no-repeat;
-      background-position: right 12px center;
-    }
-    .language-select:focus {
-      border-color: var(--lavender-dark);
-      box-shadow: 0 0 0 3px rgba(147,112,219,0.2);
-      transform: translateY(-2px);
-    }
-    
-    /* Button styling */
-    .btn {
-      background: var(--lavender-gradient);
-      color: var(--white);
-      padding: 14px 25px;
-      border: none;
-      border-radius: 10px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      width: 100%;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 4px 15px rgba(147,112,219,0.3);
-      letter-spacing: 0.5px;
-    }
-    .btn:before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-      transition: all 0.6s ease;
-    }
-    .btn:hover:before {
-      left: 100%;
-    }
-    .btn:hover {
-      transform: translateY(-2px) scale(1.01);
-      box-shadow: 0 6px 20px rgba(147,112,219,0.4);
-    }
-    .btn:active {
-      transform: translateY(1px);
-    }
-    .btn:disabled {
-      background: linear-gradient(135deg, #c9c9e1, #a9a9c3);
-      cursor: not-allowed;
-      box-shadow: none;
-    }
-    .btn:disabled:before {
-      display: none;
-    }
-    
-    /* Progress bar */
-    .progress-container {
-      display: none;
-      margin-top: 25px;
-    }
-    .progress-bar {
-      height: 10px;
-      background-color: #E6E6FA;
-      border-radius: 5px;
-      overflow: hidden;
-      box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
-      position: relative;
-    }
-    .progress {
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      background: #7B68EE;
-      width: 0%;
-      border-radius: 5px;
-      z-index: 2;
-      transition: width 0.3s ease;
-    }
-    .progress::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-size: 15px 15px;
-      background-image: linear-gradient(45deg, rgba(255,255,255,0.2) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.2) 75%, transparent 75%, transparent);
-      animation: progress-animation 1s linear infinite;
-      z-index: 3;
-    }
-    @keyframes progress-animation {
-      0% { background-position: 0 0; }
-      100% { background-position: 15px 0; }
-    }
-    .status {
-      margin-top: 12px;
-      text-align: center;
-      font-weight: 600;
-      color: var(--lavender-dark);
-    }
-    
-    /* Error message */
-    .error-message {
-      color: #e74c3c;
-      margin-top: 15px;
-      font-weight: 600;
-      display: none;
-      background-color: rgba(231,76,60,0.1);
-      padding: 12px 15px;
-      border-radius: 8px;
-      border-left: 4px solid #e74c3c;
-    }
-    
-    /* Results container */
-    .result-container {
-      display: none;
-      background-color: var(--white);
-      border-radius: 20px;
-      padding: 35px;
-      box-shadow: var(--box-shadow);
-      margin-top: 30px;
-      margin-bottom: 30px;
-      border: 1px solid rgba(147,112,219,0.1);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      position: relative;
-    }
-    .result-container:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 12px 30px rgba(72, 61, 139, 0.2);
-    }
-    
-    /* Results tabs */
-    .result-tabs {
-      display: flex;
+      border-bottom: 1px solid var(--lavender-light);
       margin-bottom: 20px;
-      border-bottom: 2px solid var(--lavender-light);
     }
+    
     .tab {
-      padding: 12px 25px;
+      padding: 10px 20px;
       cursor: pointer;
-      color: var(--text-secondary);
-      font-weight: 600;
       border-bottom: 3px solid transparent;
-      margin-right: 15px;
-      transition: all 0.2s ease;
     }
-    .tab:hover {
-      color: var(--lavender-accent);
-      transform: translateY(-3px);
-    }
+    
     .tab.active {
+      border-bottom-color: var(--lavender-mid);
       color: var(--lavender-dark);
-      border-bottom: 3px solid var(--lavender-mid);
+      font-weight: bold;
     }
+    
     .tab-content {
       display: none;
     }
+    
     .tab-content.active {
       display: block;
-      animation: fadeIn 0.5s ease;
     }
     
-    /* Transcript text */
-    .transcript-text {
-      line-height: 1.7;
-      color: var(--text-primary);
-      white-space: pre-wrap;
-      font-size: 1.05rem;
-      background-color: rgba(230,230,250,0.2);
-      padding: 20px;
+    .upload-area {
+      border: 2px dashed var(--lavender-mid);
+      padding: 30px;
+      text-align: center;
       border-radius: 10px;
-      border: 1px solid rgba(147,112,219,0.1);
-      transition: transform 0.3s ease;
-    }
-    .transcript-text:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 5px 15px rgba(72, 61, 139, 0.1);
+      margin-bottom: 20px;
+      cursor: pointer;
+      background-color: var(--lavender-light);
     }
     
-    /* Timestamps */
-    .timestamps-container .transcript-text {
-      margin-bottom: 30px;
+    .upload-icon {
+      font-size: 40px;
+      color: var(--lavender-mid);
+      margin-bottom: 10px;
     }
-    .timestamp-item {
-      margin-bottom: 15px;
+    
+    .file-info {
+      margin: 20px 0;
+      padding: 10px;
+      background-color: var(--lavender-light);
+      border-radius: 5px;
+      display: none;
+    }
+    
+    .youtube-input {
       display: flex;
-      background-color: rgba(230,230,250,0.2);
-      padding: 10px 15px;
-      border-radius: 8px;
-      transition: all 0.2s ease;
+      margin-bottom: 15px;
     }
-    .timestamp-item:hover {
-      background-color: rgba(230,230,250,0.4);
-      transform: translateX(5px);
-    }
-    .timestamp {
-      min-width: 100px;
-      color: var(--lavender-dark);
-      font-weight: 600;
-      margin-right: 15px;
-    }
-    .timestamp-text {
+    
+    .youtube-input input {
       flex: 1;
+      padding: 10px;
+      border: 1px solid var(--lavender-mid);
+      border-radius: 5px 0 0 5px;
+      outline: none;
     }
     
-    /* Speaker sections */
-    .speaker-section {
-      margin-bottom: 25px;
+    .youtube-input button {
+      background: var(--youtube-red);
+      color: white;
+      border: none;
+      padding: 0 15px;
+      border-radius: 0 5px 5px 0;
+      cursor: pointer;
+    }
+    
+    .video-preview {
+      background-color: var(--lavender-light);
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      display: none;
+    }
+    
+    .options {
+      margin-bottom: 20px;
+    }
+    
+    .checkbox-group {
+      margin-bottom: 15px;
+    }
+    
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    
+    .checkbox-container input {
+      margin-right: 10px;
+    }
+    
+    select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--lavender-mid);
+      border-radius: 5px;
+      margin-top: 5px;
+    }
+    
+    .btn {
+      background: var(--lavender-gradient);
+      color: white;
+      border: none;
+      padding: 12px;
+      width: 100%;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(72, 61, 139, 0.3);
+    }
+    
+    .btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    
+    .progress-container {
+      margin-top: 20px;
+      display: none;
+    }
+    
+    .progress-bar {
+      height: 10px;
+      background-color: var(--lavender-light);
+      border-radius: 5px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+    
+    .progress {
+      height: 100%;
+      background-color: var(--lavender-mid);
+      width: 0%;
+    }
+    
+    .error-message {
+      color: #e74c3c;
+      background-color: #fadbd8;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 15px 0;
+      display: none;
+    }
+    
+    .result-container {
+      background-color: var(--white);
+      border-radius: 10px;
+      padding: 25px;
+      box-shadow: var(--box-shadow);
+      display: none;
+    }
+    
+    .result-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--lavender-light);
+      margin-bottom: 20px;
+    }
+    
+    .result-tab {
+      padding: 10px 20px;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+    }
+    
+    .result-tab.active {
+      border-bottom-color: var(--lavender-mid);
+      color: var(--lavender-dark);
+      font-weight: bold;
+    }
+    
+    .result-content {
+      display: none;
+    }
+    
+    .result-content.active {
+      display: block;
+    }
+    
+    .transcript-text {
+      background-color: var(--lavender-light);
       padding: 15px;
-      background-color: rgba(230,230,250,0.3);
-      border-radius: 12px;
-      border: 1px solid rgba(147,112,219,0.1);
-      transition: transform 0.3s ease;
-    }
-    .speaker-section:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 5px 15px rgba(72, 61, 139, 0.1);
+      border-radius: 5px;
+      white-space: pre-wrap;
+      max-height: 400px;
+      overflow-y: auto;
+      margin-bottom: 20px;
     }
     
-    /* Button group */
     .btn-group {
       display: flex;
-      gap: 15px;
-      margin-bottom: 25px;
-    }
-    .btn-secondary {
-      background: var(--white);
-      color: var(--lavender-dark);
-      border: 2px solid var(--lavender-mid);
-      box-shadow: 0 4px 10px rgba(147,112,219,0.1);
-    }
-    .btn-secondary:hover {
-      background: var(--lavender-light);
-      color: var(--lavender-dark);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 15px rgba(147,112,219,0.2);
+      gap: 10px;
+      margin-bottom: 20px;
     }
     
-    /* Footer */
+    .btn-secondary {
+      background: white;
+      color: var(--lavender-dark);
+      border: 1px solid var(--lavender-mid);
+    }
+    
     footer {
       margin-top: auto;
       text-align: center;
-      padding: 25px 0;
+      padding: 20px;
       color: var(--text-secondary);
-      background: rgba(230,230,250,0.3);
-      border-radius: 15px;
-      margin-top: 30px;
-      position: relative;
-    }
-    .footer-content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-    }
-    .made-with {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      margin-bottom: 5px;
-    }
-    .heart {
-      color: #e74c3c;
-      font-size: 20px;
-      animation: heartbeat 1.5s ease infinite;
-    }
-    @keyframes heartbeat {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.2); }
-    }
-    .github-link {
-      color: var(--lavender-dark);
-      text-decoration: none;
-      font-weight: 600;
-      transition: all 0.2s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-    }
-    .github-link:hover {
-      color: var(--lavender-accent);
-      transform: translateY(-2px);
     }
     
-    /* Sunflower styling */
-    .sunflower-container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      width: 100%;
-    }
-    .header-content {
-      z-index: 1;
-      text-align: center;
-    }
-    .sunflower {
-      width: 80px;
-      height: 80px;
-      position: absolute;
-      opacity: 0.8;
-      transition: transform 0.3s ease;
-    }
-    .sunflower:hover {
-      transform: rotate(10deg) scale(1.1);
-      filter: drop-shadow(0 0 5px rgba(147,112,219,0.5));
-    }
-    .sunflower.left {
-      left: 5%;
-    }
-    .sunflower.right {
-      right: 5%;
-      transform: scaleX(-1);
-    }
-    .sunflower.right:hover {
-      transform: scaleX(-1) rotate(-10deg) scale(1.1);
-    }
-    
-    /* Corner decoration */
-    .corner-decoration {
-      position: absolute;
-      width: 30px;
-      height: 30px;
-      transition: transform 0.3s ease;
-      z-index: 1;
-    }
-    .corner-decoration:hover {
-      transform: rotate(15deg) scale(1.2);
-    }
-    .corner-decoration.top-left {
-      top: -15px;
-      left: -15px;
-      transform: rotate(-45deg);
-    }
-    .corner-decoration.top-right {
-      top: -15px;
-      right: -15px;
-      transform: rotate(45deg);
-    }
-    .corner-decoration.bottom-left {
-      bottom: -15px;
-      left: -15px;
-      transform: rotate(-135deg);
-    }
-    .corner-decoration.bottom-right {
-      bottom: -15px;
-      right: -15px;
-      transform: rotate(135deg);
-    }
-    
-    /* Success Animation */
-    .success-animation {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 9999;
-      display: none;
-    }
-    .confetti {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      background-color: var(--lavender-mid);
-      opacity: 0.8;
-      border-radius: 50%;
-      animation: confetti-fall 4s ease-out forwards;
-    }
-    .confetti:nth-child(odd) {
-      background-color: var(--lavender-accent);
-    }
-    .confetti:nth-child(3n) {
-      background-color: var(--lavender-dark);
-      width: 8px;
-      height: 8px;
-    }
-    .confetti:nth-child(4n) {
-      background-color: var(--lavender-light);
-      width: 12px;
-      height: 12px;
-    }
-    @keyframes confetti-fall {
-      0% {
-        transform: translateY(-10px) rotate(0);
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(100vh) rotate(360deg);
-        opacity: 0;
-      }
-    }
-    
-    /* Animations */
+    /* Simple animation */
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
     
-    /* Basic responsiveness */
+    .animate-fade {
+      animation: fadeIn 0.5s;
+    }
+    
+    /* Mobile responsiveness */
     @media (max-width: 768px) {
-      .options-grid {
-        grid-template-columns: 1fr;
-      }
       .btn-group {
         flex-direction: column;
       }
-      .youtube-input-group {
-        flex-direction: column;
-      }
-      .method-tab {
-        padding: 10px 15px;
-        font-size: 14px;
-      }
     }
   </style>
-  <!-- Font Awesome for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
   <div class="container">
     <header>
-      <div class="sunflower-container">
-        <svg class="sunflower left" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="50" cy="50" r="25" fill="#FFD700"/>
-          <g fill="#FF8C00">
-            <circle cx="50" cy="10" r="10"/>
-            <circle cx="50" cy="90" r="10"/>
-            <circle cx="10" cy="50" r="10"/>
-            <circle cx="90" cy="50" r="10"/>
-            <circle cx="22" cy="22" r="10"/>
-            <circle cx="78" cy="78" r="10"/>
-            <circle cx="22" cy="78" r="10"/>
-            <circle cx="78" cy="22" r="10"/>
-          </g>
-        </svg>
-        <div class="header-content">
-          <h1>Audio Transcription Tool</h1>
-          <p class="description">
-            Transform your audio and video recordings into precise text with our advanced transcription tool.
-            Powered by ElevenLabs' Scribe v1 API.
-          </p>
-        </div>
-        <svg class="sunflower right" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="50" cy="50" r="25" fill="#FFD700"/>
-          <g fill="#FF8C00">
-            <circle cx="50" cy="10" r="10"/>
-            <circle cx="50" cy="90" r="10"/>
-            <circle cx="10" cy="50" r="10"/>
-            <circle cx="90" cy="50" r="10"/>
-            <circle cx="22" cy="22" r="10"/>
-            <circle cx="78" cy="78" r="10"/>
-            <circle cx="22" cy="78" r="10"/>
-            <circle cx="78" cy="22" r="10"/>
-          </g>
-        </svg>
-      </div>
+      <h1>Audio Transcription Tool</h1>
+      <p class="description">Transform your audio and video recordings into text with ElevenLabs' Scribe v1 API</p>
     </header>
-
-    <div class="upload-container">
-      <!-- Corner decorations -->
-      <svg class="corner-decoration top-left" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="50" cy="50" r="25" fill="#FFD700"/>
-        <g fill="#FF8C00">
-          <circle cx="50" cy="10" r="10"/>
-          <circle cx="50" cy="90" r="10"/>
-          <circle cx="10" cy="50" r="10"/>
-          <circle cx="90" cy="50" r="10"/>
-          <circle cx="22" cy="22" r="10"/>
-          <circle cx="78" cy="78" r="10"/>
-          <circle cx="22" cy="78" r="10"/>
-          <circle cx="78" cy="22" r="10"/>
-        </g>
-      </svg>
-      <svg class="corner-decoration top-right" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="50" cy="50" r="25" fill="#FFD700"/>
-        <g fill="#FF8C00">
-          <circle cx="50" cy="10" r="10"/>
-          <circle cx="50" cy="90" r="10"/>
-          <circle cx="10" cy="50" r="10"/>
-          <circle cx="90" cy="50" r="10"/>
-          <circle cx="22" cy="22" r="10"/>
-          <circle cx="78" cy="78" r="10"/>
-          <circle cx="22" cy="78" r="10"/>
-          <circle cx="78" cy="22" r="10"/>
-        </g>
-      </svg>
-      
-      <!-- Upload Method Tabs -->
-      <div class="upload-method-tabs">
-        <div class="method-tab active" data-method="file-upload">
-          <i class="fas fa-file-audio"></i> Upload File
+    
+    <div class="main-panel">
+      <div class="tabs">
+        <div class="tab active" data-tab="file-upload">
+          <i class="fas fa-file-audio"></i> File Upload
         </div>
-        <div class="method-tab youtube" data-method="youtube">
+        <div class="tab" data-tab="youtube">
           <i class="fab fa-youtube"></i> YouTube Video
         </div>
       </div>
-
-      <!-- File Upload Method -->
-      <div class="upload-method active" id="file-upload-method">
-        <div class="upload-box" id="upload-box">
-          <div class="upload-icon">🎙️</div>
+      
+      <div class="tab-content active" id="file-upload">
+        <div class="upload-area" id="upload-area">
+          <div class="upload-icon">
+            <i class="fas fa-cloud-upload-alt"></i>
+          </div>
           <h3>Drag & Drop or Click to Upload</h3>
           <p>Supported formats: MP3, WAV, MP4, AAC, FLAC and more</p>
-          <input type="file" id="file-input" class="file-input" accept="audio/*,video/*" />
+          <input type="file" id="file-input" style="display:none" accept="audio/*,video/*">
         </div>
-
-        <div id="file-info" class="file-info">
+        
+        <div class="file-info" id="file-info">
           <p><strong>Selected file:</strong> <span id="file-name"></span></p>
           <p><strong>Size:</strong> <span id="file-size"></span></p>
         </div>
       </div>
-
-      <!-- YouTube Method -->
-      <div class="upload-method" id="youtube-method">
-        <div class="youtube-container">
-          <div class="youtube-input-group">
-            <input type="text" class="youtube-input" id="youtube-url" 
-                  placeholder="Paste YouTube URL (e.g., https://www.youtube.com/watch?v=dQw4w9WgXcQ)" />
-            <button class="youtube-btn" id="fetch-youtube">
-              <i class="fas fa-search"></i> Fetch Video
-            </button>
-          </div>
-          <span class="example-link">Example: https://www.youtube.com/watch?v=dQw4w9WgXcQ</span>
+      
+      <div class="tab-content" id="youtube">
+        <div class="youtube-input">
+          <input type="text" id="youtube-url" placeholder="Paste YouTube URL (e.g., https://www.youtube.com/watch?v=dQw4w9WgXcQ)">
+          <button id="fetch-youtube"><i class="fas fa-search"></i></button>
         </div>
         
         <div class="video-preview" id="video-preview">
-          <div class="video-info">
-            <div class="video-thumbnail">
-              <img id="video-thumbnail-img" src="" alt="Video thumbnail">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:120px;height:68px;overflow:hidden;border-radius:5px;">
+              <img id="video-thumbnail" src="" alt="Video thumbnail" style="width:100%;height:100%;object-fit:cover;">
             </div>
-            <div class="video-details">
-              <div class="video-title" id="video-title">Video Title</div>
-              <div class="video-channel" id="video-channel">Channel Name</div>
-              <div class="video-duration" id="video-duration">Duration: 3:45</div>
+            <div>
+              <div id="video-title" style="font-weight:bold;"></div>
+              <div id="video-duration" style="font-size:0.9em;color:var(--text-secondary);"></div>
             </div>
           </div>
         </div>
       </div>
-
-      <div class="options-container">
-        <h3 class="options-title">Transcription Options</h3>
-        <div class="options-grid">
-          <div class="option-item">
-            <label class="checkbox-container">Include timestamps
-              <input type="checkbox" id="timestamps-checkbox">
-              <span class="checkmark"></span>
-            </label>
+      
+      <div class="options">
+        <h3>Transcription Options</h3>
+        <div class="checkbox-group">
+          <div class="checkbox-container">
+            <input type="checkbox" id="timestamps-checkbox">
+            <label for="timestamps-checkbox">Include timestamps</label>
           </div>
-          <div class="option-item">
-            <label class="checkbox-container">Identify speakers (diarization)
-              <input type="checkbox" id="diarize-checkbox">
-              <span class="checkmark"></span>
-            </label>
+          <div class="checkbox-container">
+            <input type="checkbox" id="diarize-checkbox">
+            <label for="diarize-checkbox">Identify speakers (diarization)</label>
           </div>
-          <div class="option-item">
-            <label class="checkbox-container">Tag audio events (laughter, applause, etc.)
-              <input type="checkbox" id="tag-events-checkbox">
-              <span class="checkmark"></span>
-            </label>
+          <div class="checkbox-container">
+            <input type="checkbox" id="tag-events-checkbox">
+            <label for="tag-events-checkbox">Tag audio events (laughter, applause, etc.)</label>
           </div>
         </div>
-
-        <div style="margin-top: 20px;">
-          <label for="language-select" class="options-title">Language (optional)</label>
-          <select id="language-select" class="language-select">
+        
+        <div>
+          <label for="language-select">Language (optional)</label>
+          <select id="language-select">
             <option value="">Auto-detect language</option>
             <option value="eng">English (eng)</option>
             <option value="spa">Spanish (spa)</option>
@@ -979,348 +389,278 @@
           </select>
         </div>
       </div>
-
+      
       <button id="transcribe-btn" class="btn" disabled>Transcribe Audio</button>
+      
       <div class="error-message" id="error-message"></div>
-
+      
       <div class="progress-container" id="progress-container">
         <div class="progress-bar">
-          <div class="progress" id="progress"></div>
+          <div class="progress" id="progress-bar"></div>
         </div>
-        <div class="status" id="status">Preparing transcription...</div>
+        <p id="status-text" style="text-align:center;">Preparing transcription...</p>
       </div>
-      
-      <!-- Corner decorations -->
-      <svg class="corner-decoration bottom-left" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="50" cy="50" r="25" fill="#FFD700"/>
-        <g fill="#FF8C00">
-          <circle cx="50" cy="10" r="10"/>
-          <circle cx="50" cy="90" r="10"/>
-          <circle cx="10" cy="50" r="10"/>
-          <circle cx="90" cy="50" r="10"/>
-          <circle cx="22" cy="22" r="10"/>
-          <circle cx="78" cy="78" r="10"/>
-          <circle cx="22" cy="78" r="10"/>
-          <circle cx="78" cy="22" r="10"/>
-        </g>
-      </svg>
-      <svg class="corner-decoration bottom-right" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="50" cy="50" r="25" fill="#FFD700"/>
-        <g fill="#FF8C00">
-          <circle cx="50" cy="10" r="10"/>
-          <circle cx="50" cy="90" r="10"/>
-          <circle cx="10" cy="50" r="10"/>
-          <circle cx="90" cy="50" r="10"/>
-          <circle cx="22" cy="22" r="10"/>
-          <circle cx="78" cy="78" r="10"/>
-          <circle cx="22" cy="78" r="10"/>
-          <circle cx="78" cy="22" r="10"/>
-        </g>
-      </svg>
     </div>
-
+    
     <div class="result-container" id="result-container">
-      <svg class="corner-decoration top-right" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="50" cy="50" r="25" fill="#FFD700"/>
-        <g fill="#FF8C00">
-          <circle cx="50" cy="10" r="10"/>
-          <circle cx="50" cy="90" r="10"/>
-          <circle cx="10" cy="50" r="10"/>
-          <circle cx="90" cy="50" r="10"/>
-          <circle cx="22" cy="22" r="10"/>
-          <circle cx="78" cy="78" r="10"/>
-          <circle cx="22" cy="78" r="10"/>
-          <circle cx="78" cy="22" r="10"/>
-        </g>
-      </svg>
-      
       <div class="btn-group">
         <button id="copy-btn" class="btn">Copy to Clipboard</button>
-        <button id="download-btn" class="btn btn-secondary">Download as Text File</button>
+        <button id="download-btn" class="btn btn-secondary">Download as Text</button>
       </div>
-
+      
       <div class="result-tabs">
-        <div class="tab active" data-tab="text-only">Text Only</div>
-        <div class="tab" data-tab="timestamps">With Timestamps</div>
-        <div class="tab" data-tab="json">JSON</div>
+        <div class="result-tab active" data-tab="text">Text Only</div>
+        <div class="result-tab" data-tab="timestamps">With Timestamps</div>
+        <div class="result-tab" data-tab="json">JSON</div>
       </div>
-
-      <div id="text-only" class="tab-content active">
+      
+      <div class="result-content active" id="text-content">
         <div class="transcript-text" id="transcript-text"></div>
       </div>
-      <div id="timestamps" class="tab-content">
+      
+      <div class="result-content" id="timestamps-content">
         <div id="timestamps-container"></div>
       </div>
-      <div id="json" class="tab-content">
-        <pre id="json-content"></pre>
+      
+      <div class="result-content" id="json-content">
+        <pre class="transcript-text" id="json-text" style="font-family:monospace;"></pre>
       </div>
     </div>
   </div>
-
-  <footer>
-    <div class="footer-content">
-      <div class="made-with">
-        Created with <span class="heart">❤️</span> for Fredi
-      </div>
-      <div>
-        Powered by <a href="https://elevenlabs.io/" target="_blank" class="github-link">ElevenLabs</a>
-      </div>
-    </div>
-  </footer>
   
-  <!-- Success Animation Container -->
-  <div id="success-animation" class="success-animation"></div>
+  <footer>
+    <p>Created with ❤️ for Fredi</p>
+    <p>Powered by <a href="https://elevenlabs.io/" target="_blank" style="color:var(--lavender-dark);">ElevenLabs</a></p>
+  </footer>
 
   <script>
+    // REPLACE THIS WITH YOUR ACTUAL SERVER URL
+    const SERVER_URL = 'https://audio-transcription-tool.glitch.me';
+    
+    // Simplified JavaScript with basic functionality
     document.addEventListener('DOMContentLoaded', function() {
-      console.log('Script loaded and running!');
+      console.log('DOM fully loaded');
       
-      // Elements
-      const uploadBox = document.getElementById('upload-box');
+      // Variables for elements
+      const tabs = document.querySelectorAll('.tab');
+      const tabContents = document.querySelectorAll('.tab-content');
+      const resultTabs = document.querySelectorAll('.result-tab');
+      const resultContents = document.querySelectorAll('.result-content');
+      
+      const uploadArea = document.getElementById('upload-area');
       const fileInput = document.getElementById('file-input');
       const fileInfo = document.getElementById('file-info');
       const fileName = document.getElementById('file-name');
       const fileSize = document.getElementById('file-size');
-      const transcribeBtn = document.getElementById('transcribe-btn');
-      const progressContainer = document.getElementById('progress-container');
-      const progressBar = document.getElementById('progress');
-      const statusText = document.getElementById('status');
-      const resultContainer = document.getElementById('result-container');
-      const transcriptText = document.getElementById('transcript-text');
-      const timestampsContainer = document.getElementById('timestamps-container');
-      const jsonContent = document.getElementById('json-content');
-      const copyBtn = document.getElementById('copy-btn');
-      const downloadBtn = document.getElementById('download-btn');
-      const errorMessage = document.getElementById('error-message');
-      const successAnimation = document.getElementById('success-animation');
-
-      // YouTube elements
-      const methodTabs = document.querySelectorAll('.method-tab');
-      const uploadMethods = document.querySelectorAll('.upload-method');
-      const youtubeUrlInput = document.getElementById('youtube-url');
+      
+      const youtubeUrl = document.getElementById('youtube-url');
       const fetchYoutubeBtn = document.getElementById('fetch-youtube');
       const videoPreview = document.getElementById('video-preview');
-      const videoThumbnailImg = document.getElementById('video-thumbnail-img');
+      const videoThumbnail = document.getElementById('video-thumbnail');
       const videoTitle = document.getElementById('video-title');
-      const videoChannel = document.getElementById('video-channel');
       const videoDuration = document.getElementById('video-duration');
-
-      // Tabs
-      const tabs = document.querySelectorAll('.tab');
-      const tabContents = document.querySelectorAll('.tab-content');
-
-      // Options
+      
       const timestampsCheckbox = document.getElementById('timestamps-checkbox');
       const diarizeCheckbox = document.getElementById('diarize-checkbox');
       const tagEventsCheckbox = document.getElementById('tag-events-checkbox');
       const languageSelect = document.getElementById('language-select');
-
-      // Server URL - REPLACE THIS WITH YOUR ACTUAL GLITCH SERVER URL
-      const SERVER_URL = 'https://audio-transcription-tool.glitch.me/';
-
+      
+      const transcribeBtn = document.getElementById('transcribe-btn');
+      const errorMessage = document.getElementById('error-message');
+      const progressContainer = document.getElementById('progress-container');
+      const progressBar = document.getElementById('progress-bar');
+      const statusText = document.getElementById('status-text');
+      
+      const resultContainer = document.getElementById('result-container');
+      const transcriptText = document.getElementById('transcript-text');
+      const timestampsContainer = document.getElementById('timestamps-container');
+      const jsonText = document.getElementById('json-text');
+      
+      const copyBtn = document.getElementById('copy-btn');
+      const downloadBtn = document.getElementById('download-btn');
+      
+      // Check if elements exist
+      [
+        { name: 'uploadArea', element: uploadArea },
+        { name: 'fileInput', element: fileInput },
+        { name: 'transcribeBtn', element: transcribeBtn },
+        { name: 'fetchYoutubeBtn', element: fetchYoutubeBtn }
+      ].forEach(item => {
+        console.log(`${item.name} exists: ${!!item.element}`);
+      });
+      
+      // State
       let selectedFile = null;
       let selectedYoutubeUrl = null;
+      let activeTab = 'file-upload';
+      let activeResultTab = 'text';
       let transcriptionData = null;
-      let activeTab = 'text-only';
-      let activeMethod = 'file-upload';
       
-      // Log elements to check they exist
-      console.log('Elements loaded:');
-      console.log('transcribeBtn:', !!transcribeBtn);
-      console.log('fetchYoutubeBtn:', !!fetchYoutubeBtn);
-      console.log('methodTabs:', methodTabs.length);
-
-      // Method tabs switching
-      methodTabs.forEach(tab => {
+      // Tab switching
+      tabs.forEach(tab => {
         tab.addEventListener('click', function() {
-          console.log('Tab clicked:', tab.dataset.method);
+          console.log('Tab clicked:', this.dataset.tab);
+          activeTab = this.dataset.tab;
           
-          methodTabs.forEach(t => t.classList.remove('active'));
-          uploadMethods.forEach(m => m.classList.remove('active'));
-
-          tab.classList.add('active');
-          activeMethod = tab.dataset.method;
-          document.getElementById(`${activeMethod}-method`).classList.add('active');
+          // Update tabs
+          tabs.forEach(t => t.classList.remove('active'));
+          this.classList.add('active');
           
-          // Reset transcribe button state based on active method
-          if (activeMethod === 'file-upload') {
-            transcribeBtn.disabled = !selectedFile;
-          } else if (activeMethod === 'youtube') {
-            transcribeBtn.disabled = !selectedYoutubeUrl;
-          }
+          // Update content
+          tabContents.forEach(content => content.classList.remove('active'));
+          document.getElementById(activeTab).classList.add('active');
+          
+          // Update transcribe button state
+          updateTranscribeButtonState();
         });
       });
-
-      // YouTube URL fetching
-      fetchYoutubeBtn.addEventListener('click', function() {
-        console.log('Fetch YouTube button clicked');
-        const youtubeUrl = youtubeUrlInput.value.trim();
-        
-        if (!youtubeUrl || !isValidYoutubeUrl(youtubeUrl)) {
-          showError('Please enter a valid YouTube URL');
-          return;
-        }
-        
-        // Display loading state
-        fetchYoutubeBtn.disabled = true;
-        fetchYoutubeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
-        
-        // Get video ID for thumbnail
-        let videoId;
-        if (youtubeUrl.includes('youtu.be')) {
-          videoId = youtubeUrl.split('/').pop().split('?')[0];
-        } else if (youtubeUrl.includes('watch?v=')) {
-          videoId = new URL(youtubeUrl).searchParams.get('v');
-        } else {
-          videoId = 'dQw4w9WgXcQ'; // Fallback
-        }
-        
-        // Set thumbnail
-        videoThumbnailImg.src = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
-        
-        // Simulate fetching video info
-        setTimeout(() => {
-          // Get video title from URL - this is a simplification
-          let title = "YouTube Video";
-          if (videoId === 'dQw4w9WgXcQ') {
-            title = "Rick Astley - Never Gonna Give You Up (Official Music Video)";
-          } else {
-            // Try to extract some title from the URL
-            const urlParts = youtubeUrl.split('/');
-            const lastPart = urlParts[urlParts.length - 1];
-            if (lastPart.includes('-')) {
-              title = lastPart.split('-').map(word => 
-                word.charAt(0).toUpperCase() + word.slice(1)
-              ).join(' ');
-            }
-          }
+      
+      // Result tab switching
+      resultTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+          console.log('Result tab clicked:', this.dataset.tab);
+          activeResultTab = this.dataset.tab;
           
-          videoTitle.textContent = title;
-          videoChannel.textContent = "YouTube Channel";
-          videoDuration.textContent = "Duration: Unknown";
+          // Update tabs
+          resultTabs.forEach(t => t.classList.remove('active'));
+          this.classList.add('active');
           
-          // Show preview and enable transcribe button
-          videoPreview.style.display = 'block';
-          selectedYoutubeUrl = youtubeUrl;
-          transcribeBtn.disabled = false;
-          
-          // Reset button
-          fetchYoutubeBtn.disabled = false;
-          fetchYoutubeBtn.innerHTML = '<i class="fas fa-search"></i> Fetch Video';
-        }, 1000);
+          // Update content
+          resultContents.forEach(content => content.classList.remove('active'));
+          document.getElementById(activeResultTab + '-content').classList.add('active');
+        });
       });
-
-      // Create confetti animation
-      function createConfetti() {
-        successAnimation.style.display = 'block';
-        successAnimation.innerHTML = '';
-        
-        const numberOfConfetti = 100;
-        
-        for (let i = 0; i < numberOfConfetti; i++) {
-          const confetti = document.createElement('div');
-          confetti.classList.add('confetti');
-          
-          // Random positions
-          confetti.style.left = Math.random() * 100 + 'vw';
-          confetti.style.animationDelay = Math.random() * 2 + 's';
-          confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
-          
-          successAnimation.appendChild(confetti);
-        }
-        
-        // Remove animation after it completes
-        setTimeout(() => {
-          successAnimation.style.display = 'none';
-        }, 5000);
-      }
-
-      // Handle drag & drop
-      uploadBox.addEventListener('dragover', function(e) {
-        e.preventDefault();
-        uploadBox.style.backgroundColor = 'rgba(147,112,219,0.2)';
-      });
-      uploadBox.addEventListener('dragleave', function() {
-        uploadBox.style.backgroundColor = 'var(--lavender-light)';
-      });
-      uploadBox.addEventListener('drop', function(e) {
-        e.preventDefault();
-        uploadBox.style.backgroundColor = 'var(--lavender-light)';
-        if (e.dataTransfer.files.length > 0) {
-          handleFile(e.dataTransfer.files[0]);
-        }
-      });
-      uploadBox.addEventListener('click', function() {
+      
+      // File upload handling
+      uploadArea.addEventListener('click', function() {
+        console.log('Upload area clicked');
         fileInput.click();
       });
-      fileInput.addEventListener('change', function() {
-        if (fileInput.files.length > 0) {
-          handleFile(fileInput.files[0]);
+      
+      uploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.style.backgroundColor = 'rgba(147, 112, 219, 0.2)';
+      });
+      
+      uploadArea.addEventListener('dragleave', function() {
+        this.style.backgroundColor = '';
+      });
+      
+      uploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.style.backgroundColor = '';
+        
+        if (e.dataTransfer.files.length > 0) {
+          handleFileSelection(e.dataTransfer.files[0]);
         }
       });
-
-      function handleFile(file) {
+      
+      fileInput.addEventListener('change', function() {
+        console.log('File input changed');
+        if (this.files.length > 0) {
+          handleFileSelection(this.files[0]);
+        }
+      });
+      
+      function handleFileSelection(file) {
         console.log('File selected:', file.name);
-        // Check if file is audio or video
+        
+        // Check if it's audio or video
         if (!file.type.startsWith('audio/') && !file.type.startsWith('video/')) {
-          showError('Please upload an audio or video file.');
+          showError('Please select an audio or video file.');
           return;
         }
-
+        
         selectedFile = file;
         fileName.textContent = file.name;
         fileSize.textContent = formatFileSize(file.size);
         fileInfo.style.display = 'block';
-
-        // Enable "Transcribe" now that we have a file
-        transcribeBtn.disabled = false;
-
-        if (errorMessage.style.display === 'block') {
-          errorMessage.style.display = 'none';
-        }
-      }
-
-      function isValidYoutubeUrl(url) {
-        const regExp = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/;
-        return regExp.test(url);
-      }
-
-      // Handle transcription button click
-      transcribeBtn.addEventListener('click', function() {
-        console.log('Transcribe button clicked, method:', activeMethod);
         
-        if (activeMethod === 'file-upload') {
+        updateTranscribeButtonState();
+      }
+      
+      // YouTube handling
+      fetchYoutubeBtn.addEventListener('click', function() {
+        console.log('Fetch YouTube button clicked');
+        const url = youtubeUrl.value.trim();
+        
+        if (!url) {
+          showError('Please enter a YouTube URL');
+          return;
+        }
+        
+        if (!isValidYoutubeUrl(url)) {
+          showError('Please enter a valid YouTube URL');
+          return;
+        }
+        
+        // Get video ID
+        let videoId;
+        if (url.includes('youtu.be/')) {
+          videoId = url.split('youtu.be/')[1].split('?')[0];
+        } else if (url.includes('watch?v=')) {
+          videoId = url.split('watch?v=')[1].split('&')[0];
+        } else {
+          videoId = '';
+        }
+        
+        if (!videoId) {
+          showError('Could not extract video ID from URL');
+          return;
+        }
+        
+        // Set thumbnail
+        videoThumbnail.src = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+        
+        // Set title (we don't have actual title without API call)
+        videoTitle.textContent = 'YouTube Video';
+        videoDuration.textContent = 'Duration unknown';
+        
+        // Show preview
+        videoPreview.style.display = 'block';
+        
+        // Store URL
+        selectedYoutubeUrl = url;
+        
+        updateTranscribeButtonState();
+      });
+      
+      // Transcribe button
+      transcribeBtn.addEventListener('click', function() {
+        console.log('Transcribe button clicked');
+        
+        if (activeTab === 'file-upload') {
           transcribeFile();
-        } else if (activeMethod === 'youtube') {
+        } else {
           transcribeYouTube();
         }
       });
-
-      // Function to transcribe files
+      
       function transcribeFile() {
-        if (!selectedFile) {
-          showError('Please select a file to transcribe');
-          return;
-        }
+        console.log('Transcribing file');
         
         // Show progress
         progressContainer.style.display = 'block';
         transcribeBtn.disabled = true;
         errorMessage.style.display = 'none';
+        resultContainer.style.display = 'none';
         
-        // Build form data - make sure 'file' is the field name
+        // Start progress animation
+        startProgressAnimation();
+        
+        // Create form data
         const formData = new FormData();
-        formData.append('file', selectedFile);  // This MUST match upload.single('file')
+        formData.append('file', selectedFile);
         
-        if (diarizeCheckbox && diarizeCheckbox.checked) {
+        if (diarizeCheckbox.checked) {
           formData.append('diarize', 'true');
         }
         
-        if (tagEventsCheckbox && tagEventsCheckbox.checked) {
+        if (tagEventsCheckbox.checked) {
           formData.append('tag_audio_events', 'true');
         }
         
-        if (languageSelect && languageSelect.value) {
+        if (languageSelect.value) {
           formData.append('language_code', languageSelect.value);
         }
         
@@ -1330,64 +670,64 @@
           body: formData
         })
         .then(response => {
-          console.log("Got response:", response.status);
+          console.log('Server response status:', response.status);
+          
+          if (!response.ok) {
+            return response.text().then(text => {
+              console.error('Error response text:', text);
+              try {
+                return JSON.parse(text);
+              } catch (e) {
+                throw new Error('Server error: ' + text);
+              }
+            });
+          }
+          
           return response.json();
         })
         .then(data => {
-          console.log("Got data:", data);
+          console.log('Received data from server:', data);
           
-          // Check if we have the expected data structure
-          if (data.success && data.transcription) {
-            console.log("Transcription successful!");
-            
-            // Display results
-            transcriptionData = data.transcription;
-            displayResults(data.transcription);
-            
-            // Show results container
-            resultContainer.style.display = 'block';
-            
-            // Hide progress container
-            progressContainer.style.display = 'none';
-            
-            // Re-enable button
-            transcribeBtn.disabled = false;
-            
-            // Create success animation
-            createConfetti();
-            
-            // Scroll to results
-            resultContainer.scrollIntoView({ behavior: 'smooth' });
-          } else {
-            console.error("Unexpected data format:", data);
-            throw new Error("Unexpected response format from server");
+          if (data.error) {
+            throw new Error(data.error);
           }
+          
+          progressBar.style.width = '100%';
+          statusText.textContent = 'Transcription complete!';
+          
+          // Store data
+          transcriptionData = data.transcription;
+          
+          // Display results
+          displayResults(data.transcription);
+          
+          setTimeout(() => {
+            progressContainer.style.display = 'none';
+            resultContainer.style.display = 'block';
+            resultContainer.scrollIntoView({ behavior: 'smooth' });
+          }, 1000);
         })
         .catch(error => {
-          console.error("Fetch error:", error);
+          console.error('Transcription error:', error);
           progressContainer.style.display = 'none';
+          showError('Error: ' + error.message);
           transcribeBtn.disabled = false;
-          showError(error.message || 'Failed to transcribe audio');
         });
-
-      // Function to transcribe YouTube videos
+      }
+      
       function transcribeYouTube() {
-        if (!selectedYoutubeUrl) {
-          showError('Please enter a YouTube URL');
-          return;
-        }
+        console.log('Transcribing YouTube video');
         
-        console.log('Transcribing YouTube video:', selectedYoutubeUrl);
-        
-        // Show progress container and disable button
+        // Show progress
         progressContainer.style.display = 'block';
         transcribeBtn.disabled = true;
         errorMessage.style.display = 'none';
+        resultContainer.style.display = 'none';
         
-        // Start progress animation - YouTube videos typically take longer
-        startProgressAnimation(30);
+        // Start progress animation (YouTube takes longer)
+        startProgressAnimation(60);
         
-        // Call your server
+        // Send to server
         fetch(`${SERVER_URL}/extract-and-transcribe`, {
           method: 'POST',
           headers: {
@@ -1398,226 +738,101 @@
           })
         })
         .then(response => {
+          console.log('Server response status:', response.status);
+          
           if (!response.ok) {
-            return response.json().then(data => {
-              throw new Error(data.error || 'Error processing YouTube video');
+            return response.text().then(text => {
+              console.error('Error response text:', text);
+              try {
+                return JSON.parse(text);
+              } catch (e) {
+                throw new Error('Server error: ' + text);
+              }
             });
           }
+          
           return response.json();
         })
         .then(data => {
-          console.log('YouTube transcription successful:', data);
+          console.log('Received data from server:', data);
           
-          if (data.success) {
-            // Complete progress bar
-            progressBar.style.width = '100%';
-            
-            // Update video title if available
-            if (data.videoTitle) {
-              videoTitle.textContent = data.videoTitle;
-            }
-            
-            // Display results
-            transcriptionData = data.transcription;
-            displayResults(data.transcription);
-            
-            // Show results container
-            resultContainer.style.display = 'block';
-            
-            // Hide progress container
-            progressContainer.style.display = 'none';
-            
-            // Re-enable button
-            transcribeBtn.disabled = false;
-            
-            // Create success animation
-            createConfetti();
-            
-            // Scroll to results
-            resultContainer.scrollIntoView({ behavior: 'smooth' });
-          } else {
-            throw new Error(data.error || 'Transcription failed');
+          if (data.error) {
+            throw new Error(data.error);
           }
+          
+          progressBar.style.width = '100%';
+          statusText.textContent = 'Transcription complete!';
+          
+          // Update video title if available
+          if (data.videoTitle) {
+            videoTitle.textContent = data.videoTitle;
+          }
+          
+          // Store data
+          transcriptionData = data.transcription;
+          
+          // Display results
+          displayResults(data.transcription);
+          
+          setTimeout(() => {
+            progressContainer.style.display = 'none';
+            resultContainer.style.display = 'block';
+            resultContainer.scrollIntoView({ behavior: 'smooth' });
+          }, 1000);
         })
         .catch(error => {
           console.error('YouTube transcription error:', error);
           progressContainer.style.display = 'none';
+          showError('Error: ' + error.message);
           transcribeBtn.disabled = false;
-          showError(error.message || 'Failed to transcribe YouTube video');
         });
       }
-
-      // Progress bar animation
-      function startProgressAnimation(estimatedSeconds) {
-        // Reset progress bar
-        progressBar.style.width = '0%';
-        
-        let progress = 0;
-        const totalSteps = Math.floor(estimatedSeconds * (1000 / 350));
-        const progressStep = 99 / totalSteps;
-        
-        console.log(`Starting progress animation: ${estimatedSeconds}s, ${totalSteps} steps, ${progressStep.toFixed(2)}% per step`);
-        
-        const interval = setInterval(() => {
-          if (progress < 99) {
-            // Add a bit of randomness to make it look more natural
-            const randomFactor = 1 + (Math.random() * 0.4 - 0.2) * (1 - progress/100);
-            progress += progressStep * randomFactor;
-            progress = Math.min(99, progress);
-            
-            // Update progress bar
-            progressBar.style.width = `${progress}%`;
-            
-            // Update status text based on progress
-            if (activeMethod === 'youtube') {
-              if (progress < 30) {
-                statusText.textContent = 'Fetching YouTube video...';
-              } else if (progress < 60) {
-                statusText.textContent = 'Extracting audio...';
-              } else if (progress < 90) {
-                statusText.textContent = 'Transcribing audio...';
-              } else {
-                statusText.textContent = 'Finalizing transcription...';
-              }
-            } else {
-              statusText.textContent = `Transcribing: ${Math.floor(progress)}%`;
-            }
-          } else {
-            clearInterval(interval);
-            statusText.textContent = 'Almost ready!';
-          }
-        }, 350);
-        
-        // Store the interval ID to clear it if needed
-        window.currentProgressInterval = interval;
-      }
-
-      // Display transcription results
-      function displayResults(data) {
-        // Text Only Tab
-        transcriptText.textContent = data.text || '';
-
-        // Timestamps Tab
-        if (timestampsCheckbox.checked && data.words && data.words.length > 0) {
-          displayTimestamps(data);
-        } else {
-          timestampsContainer.innerHTML = '<p>Timestamps were not requested or are unavailable.</p>';
-        }
-
-        // JSON Tab
-        jsonContent.textContent = JSON.stringify(data, null, 2);
-      }
-
-      // Display timestamps
-      function displayTimestamps(data) {
-        timestampsContainer.innerHTML = '';
-        let currentSpeaker = '';
-        let speakerDiv = null;
-
-        data.words.forEach(word => {
-          if (word.type === 'word') {
-            if (diarizeCheckbox.checked && word.speaker_id !== currentSpeaker) {
-              currentSpeaker = word.speaker_id;
-              speakerDiv = document.createElement('div');
-              speakerDiv.className = 'speaker-section';
-              speakerDiv.innerHTML = `<h4 style="color: var(--lavender-dark); margin-bottom: 10px;">${formatSpeakerId(currentSpeaker)}</h4>`;
-              timestampsContainer.appendChild(speakerDiv);
-            }
-
-            const timestampItem = document.createElement('div');
-            timestampItem.className = 'timestamp-item';
-
-            const timestamp = document.createElement('div');
-            timestamp.className = 'timestamp';
-            timestamp.textContent = formatTime(word.start);
-
-            const text = document.createElement('div');
-            text.className = 'timestamp-text';
-            text.textContent = word.text;
-
-            timestampItem.appendChild(timestamp);
-            timestampItem.appendChild(text);
-
-            if (speakerDiv && diarizeCheckbox.checked) {
-              speakerDiv.appendChild(timestampItem);
-            } else {
-              timestampsContainer.appendChild(timestampItem);
-            }
-          }
-        });
-      }
-
-      // Tab switching
-      tabs.forEach(tab => {
-        tab.addEventListener('click', function() {
-          tabs.forEach(t => t.classList.remove('active'));
-          tabContents.forEach(c => c.classList.remove('active'));
-
-          tab.classList.add('active');
-          activeTab = tab.dataset.tab;
-          document.getElementById(activeTab).classList.add('active');
-        });
-      });
-
-      // Copy to clipboard
+      
+      // Copy and download
       copyBtn.addEventListener('click', function() {
         let content = '';
-        switch (activeTab) {
-          case 'text-only':
-            content = transcriptText.textContent;
-            break;
-          case 'timestamps':
-            const items = document.querySelectorAll('.timestamp-item');
-            items.forEach(item => {
-              const t = item.querySelector('.timestamp').textContent;
-              const txt = item.querySelector('.timestamp-text').textContent;
-              content += `[${t}] ${txt}\n`;
-            });
-            break;
-          case 'json':
-            content = jsonContent.textContent;
-            break;
+        
+        if (activeResultTab === 'text') {
+          content = transcriptText.textContent;
+        } else if (activeResultTab === 'timestamps') {
+          content = Array.from(document.querySelectorAll('.timestamp-item')).map(item => {
+            return `[${item.querySelector('.timestamp').textContent}] ${item.querySelector('.text').textContent}`;
+          }).join('\n');
+        } else {
+          content = jsonText.textContent;
         }
+        
         navigator.clipboard.writeText(content)
           .then(() => {
             const originalText = copyBtn.textContent;
             copyBtn.textContent = 'Copied!';
-            setTimeout(() => { copyBtn.textContent = originalText; }, 2000);
+            setTimeout(() => {
+              copyBtn.textContent = originalText;
+            }, 2000);
           })
           .catch(err => {
-            showError('Failed to copy content to clipboard.');
-            console.error('Copy error:', err);
+            showError('Failed to copy to clipboard');
           });
       });
-
-      // Download as text file
+      
       downloadBtn.addEventListener('click', function() {
         let content = '';
         let filename = '';
-        let fileType = 'text/plain';
-
-        switch (activeTab) {
-          case 'text-only':
-            content = transcriptText.textContent;
-            filename = 'transcript.txt';
-            break;
-          case 'timestamps':
-            const items = document.querySelectorAll('.timestamp-item');
-            items.forEach(item => {
-              const t = item.querySelector('.timestamp').textContent;
-              const txt = item.querySelector('.timestamp-text').textContent;
-              content += `[${t}] ${txt}\n`;
-            });
-            filename = 'transcript_with_timestamps.txt';
-            break;
-          case 'json':
-            content = jsonContent.textContent;
-            filename = 'transcript.json';
-            fileType = 'application/json';
-            break;
+        
+        if (activeResultTab === 'text') {
+          content = transcriptText.textContent;
+          filename = 'transcript.txt';
+        } else if (activeResultTab === 'timestamps') {
+          content = Array.from(document.querySelectorAll('.timestamp-item')).map(item => {
+            return `[${item.querySelector('.timestamp').textContent}] ${item.querySelector('.text').textContent}`;
+          }).join('\n');
+          filename = 'transcript_with_timestamps.txt';
+        } else {
+          content = jsonText.textContent;
+          filename = 'transcript.json';
         }
-
-        const blob = new Blob([content], { type: fileType });
+        
+        const blob = new Blob([content], { type: 'text/plain' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -1627,25 +842,139 @@
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
       });
-
+      
       // Helper functions
-      function formatFileSize(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+      function updateTranscribeButtonState() {
+        transcribeBtn.disabled = (activeTab === 'file-upload' && !selectedFile) || 
+                               (activeTab === 'youtube' && !selectedYoutubeUrl);
+      }
+      
+      function startProgressAnimation(duration = 30) {
+        let progress = 0;
+        const interval = 100; // ms
+        const increment = 99 / ((duration * 1000) / interval);
+        
+        progressBar.style.width = '0%';
+        
+        const timer = setInterval(() => {
+          progress += increment;
+          if (progress >= 99) {
+            progress = 99;
+            clearInterval(timer);
+          }
+          
+          progressBar.style.width = progress + '%';
+          
+          // Update status message based on progress
+          if (progress < 30) {
+            statusText.textContent = 'Preparing transcription...';
+          } else if (progress < 60) {
+            statusText.textContent = 'Processing audio...';
+          } else if (progress < 90) {
+            statusText.textContent = 'Generating transcript...';
+          } else {
+            statusText.textContent = 'Almost done...';
+          }
+        }, interval);
+      }
+      
+      function displayResults(data) {
+        // Text content
+        transcriptText.textContent = data.text || '';
+        
+        // Timestamps content
+        if (timestampsCheckbox.checked && data.words && data.words.length > 0) {
+          renderTimestamps(data);
+        } else {
+          timestampsContainer.innerHTML = '<p>Timestamps were not requested or unavailable.</p>';
+        }
+        
+        // JSON content
+        jsonText.textContent = JSON.stringify(data, null, 2);
+      }
+      
+      function renderTimestamps(data) {
+        timestampsContainer.innerHTML = '';
+        
+        let currentSpeaker = null;
+        let speakerDiv = null;
+        
+        data.words.forEach(word => {
+          if (word.type === 'word') {
+            // Handle speaker change if diarization is enabled
+            if (diarizeCheckbox.checked && word.speaker_id && word.speaker_id !== currentSpeaker) {
+              currentSpeaker = word.speaker_id;
+              speakerDiv = document.createElement('div');
+              speakerDiv.style.marginBottom = '20px';
+              speakerDiv.style.padding = '10px';
+              speakerDiv.style.backgroundColor = 'rgba(147, 112, 219, 0.1)';
+              speakerDiv.style.borderRadius = '5px';
+              
+              const speakerHeader = document.createElement('h4');
+              speakerHeader.textContent = formatSpeakerId(currentSpeaker);
+              speakerHeader.style.marginBottom = '10px';
+              speakerDiv.appendChild(speakerHeader);
+              
+              timestampsContainer.appendChild(speakerDiv);
+            }
+            
+            const item = document.createElement('div');
+            item.className = 'timestamp-item';
+            item.style.display = 'flex';
+            item.style.marginBottom = '10px';
+            item.style.padding = '5px';
+            item.style.backgroundColor = 'rgba(147, 112, 219, 0.05)';
+            item.style.borderRadius = '5px';
+            
+            const timestamp = document.createElement('div');
+            timestamp.className = 'timestamp';
+            timestamp.textContent = formatTime(word.start);
+            timestamp.style.minWidth = '100px';
+            timestamp.style.fontWeight = 'bold';
+            timestamp.style.color = 'var(--lavender-dark)';
+            
+            const text = document.createElement('div');
+            text.className = 'text';
+            text.textContent = word.text;
+            text.style.flex = '1';
+            
+            item.appendChild(timestamp);
+            item.appendChild(text);
+            
+            if (speakerDiv && diarizeCheckbox.checked) {
+              speakerDiv.appendChild(item);
+            } else {
+              timestampsContainer.appendChild(item);
+            }
+          }
+        });
       }
       
       function formatTime(seconds) {
-        const minutes = Math.floor(seconds / 60);
-        const remainingSeconds = Math.floor(seconds % 60);
-        const milliseconds = Math.floor((seconds % 1) * 1000);
-        return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}.${String(milliseconds).padStart(3, '0')}`;
+        const min = Math.floor(seconds / 60);
+        const sec = Math.floor(seconds % 60);
+        const ms = Math.floor((seconds % 1) * 1000);
+        
+        return `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}.${String(ms).padStart(3, '0')}`;
       }
       
-      function formatSpeakerId(speakerId) {
-        return speakerId.replace('speaker_', 'Speaker ');
+      function formatSpeakerId(id) {
+        return id.replace('speaker_', 'Speaker ');
+      }
+      
+      function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+      }
+      
+      function isValidYoutubeUrl(url) {
+        const pattern = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})(&.*)?$/;
+        return pattern.test(url);
       }
       
       function showError(message) {
@@ -1653,17 +982,14 @@
         errorMessage.textContent = message;
         errorMessage.style.display = 'block';
         
-        // Scroll to error message
-        errorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        
         // Add shake animation
-        errorMessage.classList.add('shake');
+        errorMessage.classList.add('animate-shake');
         setTimeout(() => {
-          errorMessage.classList.remove('shake');
+          errorMessage.classList.remove('animate-shake');
         }, 500);
       }
       
-      // Add shake animation
+      // Add shake animation style
       const style = document.createElement('style');
       style.textContent = `
         @keyframes shake {
@@ -1671,8 +997,8 @@
           10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
           20%, 40%, 60%, 80% { transform: translateX(5px); }
         }
-        .shake {
-          animation: shake 0.5s ease;
+        .animate-shake {
+          animation: shake 0.5s;
         }
       `;
       document.head.appendChild(style);
