@@ -16,6 +16,8 @@
       --text-primary: #2D2B3A;
       --text-secondary: #626176;
       --box-shadow: 0 8px 25px rgba(72, 61, 139, 0.15);
+      --youtube-red: #FF0000;
+      --youtube-gradient: linear-gradient(135deg, #FF0000, #CC0000);
     }
     * {
       margin: 0;
@@ -39,7 +41,7 @@
       position: absolute;
       width: 40px;
       height: 40px;
-      background-image: url('sunflower.svg');
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="%23FFD700"/><g fill="%23FF8C00"><circle cx="50" cy="10" r="10"/><circle cx="50" cy="90" r="10"/><circle cx="10" cy="50" r="10"/><circle cx="90" cy="50" r="10"/><circle cx="22" cy="22" r="10"/><circle cx="78" cy="78" r="10"/><circle cx="22" cy="78" r="10"/><circle cx="78" cy="22" r="10"/></g></svg>');
       background-size: contain;
       background-repeat: no-repeat;
       z-index: -1;
@@ -108,6 +110,144 @@
       transform: translateY(-5px);
       box-shadow: 0 12px 30px rgba(72, 61, 139, 0.2);
     }
+    
+    /* Tabs for upload method */
+    .upload-method-tabs {
+      display: flex;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--lavender-light);
+    }
+    .method-tab {
+      padding: 12px 25px;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-weight: 600;
+      border-bottom: 3px solid transparent;
+      margin-right: 15px;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .method-tab:hover {
+      color: var(--lavender-accent);
+      transform: translateY(-3px);
+    }
+    .method-tab.active {
+      color: var(--lavender-dark);
+      border-bottom: 3px solid var(--lavender-mid);
+    }
+    .method-tab.youtube {
+      color: var(--youtube-red);
+    }
+    .method-tab.youtube.active {
+      border-bottom: 3px solid var(--youtube-red);
+    }
+    .method-tab i {
+      font-size: 1.2rem;
+    }
+    .upload-method {
+      display: none;
+    }
+    .upload-method.active {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+    
+    /* YouTube input styling */
+    .youtube-container {
+      margin-bottom: 20px;
+    }
+    .youtube-input-group {
+      display: flex;
+      margin-bottom: 15px;
+      gap: 10px;
+    }
+    .youtube-input {
+      flex: 1;
+      padding: 12px 15px;
+      border-radius: 8px;
+      border: 2px solid var(--lavender-mid);
+      background-color: var(--white);
+      font-size: 16px;
+      outline: none;
+      color: var(--text-primary);
+      transition: all 0.2s ease;
+    }
+    .youtube-input:focus {
+      border-color: var(--youtube-red);
+      box-shadow: 0 0 0 3px rgba(255,0,0,0.1);
+      transform: translateY(-2px);
+    }
+    .youtube-btn {
+      background: var(--youtube-gradient);
+      color: var(--white);
+      padding: 0 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .youtube-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255,0,0,0.2);
+    }
+    .youtube-btn i {
+      font-size: 1.2rem;
+    }
+    .example-link {
+      display: block;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-top: 5px;
+    }
+    
+    /* Video preview */
+    .video-preview {
+      margin-top: 20px;
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
+    .video-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 15px;
+      padding: 15px;
+      background-color: rgba(230,230,250,0.3);
+      border-radius: 10px;
+      border: 1px solid rgba(147,112,219,0.1);
+    }
+    .video-thumbnail {
+      width: 120px;
+      height: 68px;
+      background-color: #ddd;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .video-thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .video-details {
+      flex: 1;
+    }
+    .video-title {
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: var(--text-primary);
+    }
+    .video-channel, .video-duration {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+    
     .upload-box {
       border: 3px dashed var(--lavender-mid);
       border-radius: 12px;
@@ -571,7 +711,7 @@
     .sunflower {
       width: 80px;
       height: 80px;
-      background-image: url('sunflower.svg');
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="%23FFD700"/><g fill="%23FF8C00"><circle cx="50" cy="10" r="10"/><circle cx="50" cy="90" r="10"/><circle cx="10" cy="50" r="10"/><circle cx="90" cy="50" r="10"/><circle cx="22" cy="22" r="10"/><circle cx="78" cy="78" r="10"/><circle cx="22" cy="78" r="10"/><circle cx="78" cy="22" r="10"/></g></svg>');
       background-size: contain;
       background-repeat: no-repeat;
       position: absolute;
@@ -596,7 +736,7 @@
     /* Corner sunflowers */
     .corner-sunflower {
       position: absolute;
-      background-image: url('sunflower.svg');
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="25" fill="%23FFD700"/><g fill="%23FF8C00"><circle cx="50" cy="10" r="10"/><circle cx="50" cy="90" r="10"/><circle cx="10" cy="50" r="10"/><circle cx="90" cy="50" r="10"/><circle cx="22" cy="22" r="10"/><circle cx="78" cy="78" r="10"/><circle cx="22" cy="78" r="10"/><circle cx="78" cy="22" r="10"/></g></svg>');
       background-size: contain;
       background-repeat: no-repeat;
       transition: transform 0.3s ease;
@@ -684,6 +824,17 @@
       }
     }
     
+    /* Note about server backend */
+    .server-note {
+      background-color: rgba(255, 235, 59, 0.1);
+      border-left: 4px solid #ffc107;
+      padding: 12px;
+      margin-bottom: 20px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      color: #856404;
+    }
+    
     /* Basic responsiveness */
     @media (max-width: 768px) {
       .options-grid {
@@ -692,8 +843,17 @@
       .btn-group {
         flex-direction: column;
       }
+      .youtube-input-group {
+        flex-direction: column;
+      }
+      .method-tab {
+        padding: 10px 15px;
+        font-size: 14px;
+      }
     }
   </style>
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
   <!-- Background Sunflowers -->
@@ -723,16 +883,56 @@
       <div class="corner-sunflower top-left"></div>
       <div class="corner-sunflower top-right"></div>
       
-      <div class="upload-box" id="upload-box">
-        <div class="upload-icon">🎙️</div>
-        <h3>Drag & Drop or Click to Upload</h3>
-        <p>Supported formats: MP3, WAV, MP4, AAC, FLAC and more</p>
-        <input type="file" id="file-input" class="file-input" accept="audio/*,video/*" />
+      <!-- Upload Method Tabs -->
+      <div class="upload-method-tabs">
+        <div class="method-tab active" data-method="file-upload">
+          <i class="fas fa-file-audio"></i> Upload File
+        </div>
+        <div class="method-tab youtube" data-method="youtube">
+          <i class="fab fa-youtube"></i> YouTube Video
+        </div>
       </div>
 
-      <div id="file-info" class="file-info">
-        <p><strong>Selected file:</strong> <span id="file-name"></span></p>
-        <p><strong>Size:</strong> <span id="file-size"></span></p>
+      <!-- File Upload Method -->
+      <div class="upload-method active" id="file-upload-method">
+        <div class="upload-box" id="upload-box">
+          <div class="upload-icon">🎙️</div>
+          <h3>Drag & Drop or Click to Upload</h3>
+          <p>Supported formats: MP3, WAV, MP4, AAC, FLAC and more</p>
+          <input type="file" id="file-input" class="file-input" accept="audio/*,video/*" />
+        </div>
+
+        <div id="file-info" class="file-info">
+          <p><strong>Selected file:</strong> <span id="file-name"></span></p>
+          <p><strong>Size:</strong> <span id="file-size"></span></p>
+        </div>
+      </div>
+
+      <!-- YouTube Method -->
+      <div class="upload-method" id="youtube-method">
+        <div class="youtube-container">
+          <div class="youtube-input-group">
+            <input type="text" class="youtube-input" id="youtube-url" 
+                  placeholder="Paste YouTube URL (e.g., https://www.youtube.com/watch?v=dQw4w9WgXcQ)" />
+            <button class="youtube-btn" id="fetch-youtube">
+              <i class="fas fa-search"></i> Fetch Video
+            </button>
+          </div>
+          <span class="example-link">Example: https://www.youtube.com/watch?v=dQw4w9WgXcQ</span>
+        </div>
+        
+        <div class="video-preview" id="video-preview">
+          <div class="video-info">
+            <div class="video-thumbnail">
+              <img id="video-thumbnail-img" src="" alt="Video thumbnail">
+            </div>
+            <div class="video-details">
+              <div class="video-title" id="video-title">Video Title</div>
+              <div class="video-channel" id="video-channel">Channel Name</div>
+              <div class="video-duration" id="video-duration">Duration: 3:45</div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="options-container">
@@ -863,6 +1063,17 @@
       const errorMessage = document.getElementById('error-message');
       const successAnimation = document.getElementById('success-animation');
 
+      // YouTube elements
+      const methodTabs = document.querySelectorAll('.method-tab');
+      const uploadMethods = document.querySelectorAll('.upload-method');
+      const youtubeUrlInput = document.getElementById('youtube-url');
+      const fetchYoutubeBtn = document.getElementById('fetch-youtube');
+      const videoPreview = document.getElementById('video-preview');
+      const videoThumbnailImg = document.getElementById('video-thumbnail-img');
+      const videoTitle = document.getElementById('video-title');
+      const videoChannel = document.getElementById('video-channel');
+      const videoDuration = document.getElementById('video-duration');
+
       // Tabs
       const tabs = document.querySelectorAll('.tab');
       const tabContents = document.querySelectorAll('.tab-content');
@@ -873,12 +1084,94 @@
       const tagEventsCheckbox = document.getElementById('tag-events-checkbox');
       const languageSelect = document.getElementById('language-select');
 
+      // Server URL - REPLACE THIS WITH YOUR ACTUAL GLITCH SERVER URL
+      const SERVER_URL = 'https://splashy-bejewled-chocolate.glitch.me';
+
       // Hardcoded API key (demo only; replace with your real key or prompt the user)
       const apiKey = "sk_d24a85cfcfe691b0fa2908a5d05e9b1dbe7ba894ba206569";
 
       let selectedFile = null;
+      let selectedYoutubeUrl = null;
       let transcriptionData = null;
       let activeTab = 'text-only';
+      let activeMethod = 'file-upload';
+
+      // Method tabs switching
+      methodTabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+          methodTabs.forEach(t => t.classList.remove('active'));
+          uploadMethods.forEach(m => m.classList.remove('active'));
+
+          tab.classList.add('active');
+          activeMethod = tab.dataset.method;
+          document.getElementById(`${activeMethod}-method`).classList.add('active');
+          
+          // Reset transcribe button state based on active method
+          if (activeMethod === 'file-upload') {
+            transcribeBtn.disabled = !selectedFile;
+          } else if (activeMethod === 'youtube') {
+            transcribeBtn.disabled = !selectedYoutubeUrl;
+          }
+        });
+      });
+
+      // YouTube URL fetching
+      fetchYoutubeBtn.addEventListener('click', function() {
+        const youtubeUrl = youtubeUrlInput.value.trim();
+        
+        if (!youtubeUrl || !isValidYoutubeUrl(youtubeUrl)) {
+          showError('Please enter a valid YouTube URL');
+          return;
+        }
+        
+        // Display loading state
+        fetchYoutubeBtn.disabled = true;
+        fetchYoutubeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+        
+        // Get video ID for thumbnail
+        let videoId;
+        if (youtubeUrl.includes('youtu.be')) {
+          videoId = youtubeUrl.split('/').pop().split('?')[0];
+        } else if (youtubeUrl.includes('watch?v=')) {
+          videoId = new URL(youtubeUrl).searchParams.get('v');
+        } else {
+          videoId = 'dQw4w9WgXcQ'; // Fallback
+        }
+        
+        // Set thumbnail
+        videoThumbnailImg.src = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+        
+        // Simulate fetching video info
+        setTimeout(() => {
+          // Get video title from URL - this is a simplification
+          let title = "YouTube Video";
+          if (videoId === 'dQw4w9WgXcQ') {
+            title = "Rick Astley - Never Gonna Give You Up (Official Music Video)";
+          } else {
+            // Try to extract some title from the URL
+            const urlParts = youtubeUrl.split('/');
+            const lastPart = urlParts[urlParts.length - 1];
+            if (lastPart.includes('-')) {
+              title = lastPart.split('-').map(word => 
+                word.charAt(0).toUpperCase() + word.slice(1)
+              ).join(' ');
+            }
+          }
+          
+          videoTitle.textContent = title;
+          videoChannel.textContent = "YouTube Channel";
+          videoDuration.textContent = "Duration: Unknown";
+          
+          // Show preview and enable transcribe button
+          videoPreview.style.display = 'block';
+          selectedYoutubeUrl = youtubeUrl;
+          transcribeBtn.disabled = false;
+          
+          // Reset button
+          fetchYoutubeBtn.disabled = false;
+          fetchYoutubeBtn.innerHTML = '<i class="fas fa-search"></i> Fetch Video';
+        }, 1000);
+      });
 
       // Create confetti animation
       function createConfetti() {
@@ -957,20 +1250,83 @@
 
       transcribeBtn.addEventListener('click', startTranscription);
 
-      // Start a more realistic simulation based on file size
+      // Function to transcribe YouTube videos
+      async function transcribeYouTube(youtubeUrl) {
+        try {
+          // Show progress
+          progressContainer.style.display = 'block';
+          statusText.textContent = 'Preparing YouTube audio...';
+          
+          // Start progress animation
+          startProgressAnimation(30); // YouTube downloads typically take longer
+          
+          // Call your server - replace with your actual server URL
+          const response = await fetch(`${SERVER_URL}/extract-and-transcribe`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              youtubeUrl: youtubeUrl
+            })
+          });
+          
+          const data = await response.json();
+          
+          if (!data.success) {
+            throw new Error(data.error || 'Transcription failed');
+          }
+          
+          // Display video details
+          videoTitle.textContent = data.videoTitle || 'YouTube Video';
+          
+          // Handle successful transcription
+          transcriptionData = data.transcription;
+          displayResults(data.transcription);
+          
+          // Show results
+          resultContainer.style.display = 'block';
+          progressContainer.style.display = 'none';
+          
+          // Reset button
+          transcribeBtn.disabled = false;
+          
+          // Trigger success animation
+          createConfetti();
+          
+          // Scroll to results
+          resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          
+        } catch (error) {
+          console.error('YouTube transcription error:', error);
+          showError(error.message || 'Failed to transcribe YouTube video');
+          progressContainer.style.display = 'none';
+          transcribeBtn.disabled = false;
+        }
+      }
+
+      // Handle transcription start
       function startTranscription() {
-        if (!selectedFile) return;
+        // Determine which method is active and check if we have valid input
+        if (activeMethod === 'file-upload' && !selectedFile) return;
+        if (activeMethod === 'youtube' && !selectedYoutubeUrl) return;
 
         // Show progress container and disable button
         progressContainer.style.display = 'block';
         transcribeBtn.disabled = true;
         errorMessage.style.display = 'none';
         
-        // Calculate realistic timing based on file size (bytes)
+        if (activeMethod === 'youtube') {
+          // YouTube transcription
+          transcribeYouTube(selectedYoutubeUrl);
+          return;
+        }
+        
+        // For files, proceed with the regular transcription
+        // Calculate realistic timing based on file size
         const fileSize = selectedFile.size;
         // Based on user feedback: 1.7MB processed in ~7 seconds = ~250KB/second
-        const bytesPerSecond = 250000; // Updated from 50000 to 250000 (250KB per second)
-        // Also adjust minimum time to 5 seconds and maximum to 3 minutes (180 seconds)
+        const bytesPerSecond = 250000;
         const estimatedSeconds = Math.max(5, Math.min(180, fileSize / bytesPerSecond));
         
         // Calculate a step size to reach ~99% in the estimated time
@@ -979,7 +1335,7 @@
         const progressStep = 99 / totalSteps;
         
         console.log(`File size: ${formatFileSize(fileSize)}, Est. time: ${Math.round(estimatedSeconds)}s, Steps: ${totalSteps}, Step size: ${progressStep.toFixed(3)}%`);
-        
+
         // Build form data
         const formData = new FormData();
         formData.append('file', selectedFile);
@@ -1089,6 +1445,36 @@
 
         // Send the request
         xhr.send(formData);
+      }
+
+      // Add this function to create a smoother progress animation for YouTube
+      function startProgressAnimation(estimatedSeconds) {
+        progressBar.style.width = '0%';
+        let progress = 0;
+        
+        const totalSteps = Math.floor(estimatedSeconds * (1000 / 350));
+        const progressStep = 99 / totalSteps;
+        
+        const interval = setInterval(() => {
+          if (progress < 99) {
+            progress += progressStep;
+            progressBar.style.width = `${progress}%`;
+            
+            if (progress > 30 && progress < 60) {
+              statusText.textContent = 'Downloading YouTube audio...';
+            } else if (progress >= 60 && progress < 85) {
+              statusText.textContent = 'Processing audio...';
+            } else if (progress >= 85) {
+              statusText.textContent = 'Generating transcription...';
+            }
+          } else {
+            clearInterval(interval);
+            statusText.textContent = 'Almost ready!';
+          }
+        }, 350);
+        
+        // Store the interval to clear it if needed
+        window.ytProgressInterval = interval;
       }
 
       function displayResults(data) {
@@ -1233,15 +1619,23 @@
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
       }
+      
       function formatTime(seconds) {
         const minutes = Math.floor(seconds / 60);
         const remainingSeconds = Math.floor(seconds % 60);
         const milliseconds = Math.floor((seconds % 1) * 1000);
         return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}.${String(milliseconds).padStart(3, '0')}`;
       }
+      
       function formatSpeakerId(speakerId) {
         return speakerId.replace('speaker_', 'Speaker ');
       }
+      
+      function isValidYoutubeUrl(url) {
+        const regExp = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/;
+        return regExp.test(url);
+      }
+      
       function showError(message) {
         errorMessage.textContent = message;
         errorMessage.style.display = 'block';
