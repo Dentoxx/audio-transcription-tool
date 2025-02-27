@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Audio Transcription Tool</title>
   <style>
     :root {
@@ -152,7 +152,34 @@
       display: flex;
       align-items: center;
     }
-    /* Use only one definition for the checkmark to ensure it’s visible */
+
+    /* Restore old-style checkbox alignment */
+    .checkbox-container {
+      position: relative;
+      padding-left: 35px; /* space to the left for the box */
+      cursor: pointer;
+      user-select: none;
+      font-weight: 500;
+    }
+    .checkbox-container input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
+    }
+    .checkmark {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
+      height: 25px;
+      width: 25px;
+      background-color: var(--white);
+      border: 2px solid var(--lavender-mid);
+      border-radius: 5px;
+      transition: all 0.2s ease;
+    }
     .checkbox-container .checkmark:after {
       content: "";
       position: absolute;
@@ -165,24 +192,6 @@
       border-width: 0 3px 3px 0;
       display: none;
     }
-    .checkbox-container input {
-      position: absolute;
-      opacity: 0;
-      cursor: pointer;
-      height: 0;
-      width: 0;
-    }
-    .checkmark {
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 25px;
-      width: 25px;
-      background-color: var(--white);
-      border: 2px solid var(--lavender-mid);
-      border-radius: 5px;
-      transition: all 0.2s ease;
-    }
     .checkbox-container:hover input ~ .checkmark {
       background-color: var(--lavender-light);
       box-shadow: 0 0 0 3px rgba(147,112,219,0.2);
@@ -194,6 +203,7 @@
     .checkbox-container input:checked ~ .checkmark:after {
       display: block;
     }
+
     .language-select {
       width: 100%;
       padding: 12px 15px;
@@ -289,6 +299,16 @@
       font-weight: 600;
       color: var(--lavender-dark);
     }
+    .error-message {
+      color: #e74c3c;
+      margin-top: 15px;
+      font-weight: 600;
+      display: none;
+      background-color: rgba(231,76,60,0.1);
+      padding: 12px 15px;
+      border-radius: 8px;
+      border-left: 4px solid #e74c3c;
+    }
     .result-container {
       display: none;
       background-color: var(--white);
@@ -360,6 +380,13 @@
     .timestamp-text {
       flex: 1;
     }
+    .speaker-section {
+      margin-bottom: 25px;
+      padding: 15px;
+      background-color: rgba(230,230,250,0.3);
+      border-radius: 12px;
+      border: 1px solid rgba(147,112,219,0.1);
+    }
     .btn-group {
       display: flex;
       gap: 15px;
@@ -376,23 +403,6 @@
       color: var(--lavender-dark);
       transform: translateY(-2px);
       box-shadow: 0 6px 15px rgba(147,112,219,0.2);
-    }
-    .error-message {
-      color: #e74c3c;
-      margin-top: 15px;
-      font-weight: 600;
-      display: none;
-      background-color: rgba(231,76,60,0.1);
-      padding: 12px 15px;
-      border-radius: 8px;
-      border-left: 4px solid #e74c3c;
-    }
-    .speaker-section {
-      margin-bottom: 25px;
-      padding: 15px;
-      background-color: rgba(230,230,250,0.3);
-      border-radius: 12px;
-      border: 1px solid rgba(147,112,219,0.1);
     }
     footer {
       margin-top: auto;
@@ -593,11 +603,9 @@
       <div id="text-only" class="tab-content active">
         <div class="transcript-text" id="transcript-text"></div>
       </div>
-
       <div id="timestamps" class="tab-content">
         <div id="timestamps-container"></div>
       </div>
-
       <div id="json" class="tab-content">
         <pre id="json-content"></pre>
       </div>
@@ -645,23 +653,21 @@
       const tagEventsCheckbox = document.getElementById('tag-events-checkbox');
       const languageSelect = document.getElementById('language-select');
 
-      // Hardcoded API key
-      const apiKey = "sk_c30c12683a203e6967e620500c0f88afc4e310f52aa2dd59";
+      // Hardcoded API key (demo only; replace with your real key or prompt the user)
+      const apiKey = "YOUR_API_KEY_HERE";
 
       let selectedFile = null;
       let transcriptionData = null;
       let activeTab = 'text-only';
 
-      // Handle drag and drop
+      // Handle drag & drop
       uploadBox.addEventListener('dragover', function(e) {
         e.preventDefault();
         uploadBox.style.backgroundColor = 'rgba(147,112,219,0.2)';
       });
-
       uploadBox.addEventListener('dragleave', function() {
         uploadBox.style.backgroundColor = 'var(--lavender-light)';
       });
-
       uploadBox.addEventListener('drop', function(e) {
         e.preventDefault();
         uploadBox.style.backgroundColor = 'var(--lavender-light)';
@@ -669,11 +675,9 @@
           handleFile(e.dataTransfer.files[0]);
         }
       });
-
       uploadBox.addEventListener('click', function() {
         fileInput.click();
       });
-
       fileInput.addEventListener('change', function() {
         if (fileInput.files.length > 0) {
           handleFile(fileInput.files[0]);
@@ -692,12 +696,7 @@
         fileSize.textContent = formatFileSize(file.size);
         fileInfo.style.display = 'block';
 
-        // Reset checkboxes when a file is uploaded
-        timestampsCheckbox.checked = false;
-        diarizeCheckbox.checked = false;
-        tagEventsCheckbox.checked = false;
-
-        // Enable the transcribe button now that a file is selected
+        // Enable "Transcribe" now that we have a file
         transcribeBtn.disabled = false;
 
         if (errorMessage.style.display === 'block') {
@@ -707,7 +706,7 @@
 
       transcribeBtn.addEventListener('click', startTranscription);
 
-      // Updated startTranscription:
+      // Start transcription, only show progress for "transcribing"
       function startTranscription() {
         if (!selectedFile) return;
 
@@ -726,57 +725,49 @@
           formData.append('language_code', languageSelect.value);
         }
 
-        statusText.textContent = 'Uploading...';
-
+        // Create request
         const xhr = new XMLHttpRequest();
         xhr.open('POST', 'https://api.elevenlabs.io/v1/speech-to-text');
         xhr.setRequestHeader('xi-api-key', apiKey);
 
-        let uploadComplete = false;
-        let transcriptionInterval;
-
-        // Upload progress – we map upload progress to 0–50% of the bar
-        xhr.upload.onprogress = function(e) {
-          if (e.lengthComputable) {
-            const uploadPercent = e.loaded / e.total;
-            const progressVal = Math.round(uploadPercent * 50); // 0 to 50%
-            progressBar.style.width = progressVal + '%';
-            statusText.textContent = `Uploading: ${Math.round(uploadPercent * 100)}%`;
-            if (uploadPercent === 1 && !uploadComplete) {
-              uploadComplete = true;
-              // Start simulating transcription progress (50–99%)
-              let transProgress = 50;
-              transcriptionInterval = setInterval(function() {
-                if (transProgress < 99) {
-                  transProgress++;
-                  progressBar.style.width = transProgress + '%';
-                  statusText.textContent = `Transcribing: ${transProgress}%`;
-                } else {
-                  clearInterval(transcriptionInterval);
-                }
-              }, 1000);
-            }
+        // Start simulating the "transcribing" progress from 0% to ~99%
+        let transProgress = 0;
+        const transcriptionInterval = setInterval(function() {
+          if (transProgress < 99) {
+            transProgress++;
+            progressBar.style.width = transProgress + '%';
+            statusText.textContent = `Transcribing: ${transProgress}%`;
+          } else {
+            clearInterval(transcriptionInterval);
           }
-        };
+        }, 1000);
 
         xhr.onreadystatechange = function() {
           if (xhr.readyState === XMLHttpRequest.DONE) {
+            // Once we get a response, stop the progress simulation
+            clearInterval(transcriptionInterval);
+
             if (xhr.status === 200) {
-              if (transcriptionInterval) clearInterval(transcriptionInterval);
+              // Set progress to 100%
               progressBar.style.width = '100%';
               statusText.textContent = 'Transcription successful!';
+
               const data = JSON.parse(xhr.responseText);
               transcriptionData = data;
               displayResults(data);
+
+              // Show results after a short delay
               setTimeout(() => {
                 resultContainer.style.display = 'block';
                 progressContainer.style.display = 'none';
                 transcribeBtn.disabled = false;
               }, 1000);
+
             } else {
-              if (transcriptionInterval) clearInterval(transcriptionInterval);
+              // Handle errors
               progressContainer.style.display = 'none';
               transcribeBtn.disabled = false;
+
               let errorDetail;
               try {
                 const errorResponse = JSON.parse(xhr.responseText);
@@ -790,12 +781,13 @@
           }
         };
 
+        // Send the request
         xhr.send(formData);
       }
 
       function displayResults(data) {
         // Text Only Tab
-        transcriptText.textContent = data.text;
+        transcriptText.textContent = data.text || '';
 
         // Timestamps Tab
         if (timestampsCheckbox.checked && data.words && data.words.length > 0) {
@@ -812,6 +804,7 @@
         timestampsContainer.innerHTML = '';
         let currentSpeaker = '';
         let speakerDiv = null;
+
         data.words.forEach(word => {
           if (word.type === 'word') {
             if (diarizeCheckbox.checked && word.speaker_id !== currentSpeaker) {
@@ -821,6 +814,7 @@
               speakerDiv.innerHTML = `<h4 style="color: var(--lavender-dark); margin-bottom: 10px;">${formatSpeakerId(currentSpeaker)}</h4>`;
               timestampsContainer.appendChild(speakerDiv);
             }
+
             const timestampItem = document.createElement('div');
             timestampItem.className = 'timestamp-item';
 
@@ -849,6 +843,7 @@
         tab.addEventListener('click', function() {
           tabs.forEach(t => t.classList.remove('active'));
           tabContents.forEach(c => c.classList.remove('active'));
+
           tab.classList.add('active');
           activeTab = tab.dataset.tab;
           document.getElementById(activeTab).classList.add('active');
@@ -865,9 +860,9 @@
           case 'timestamps':
             const items = document.querySelectorAll('.timestamp-item');
             items.forEach(item => {
-              const timestamp = item.querySelector('.timestamp').textContent;
-              const text = item.querySelector('.timestamp-text').textContent;
-              content += `[${timestamp}] ${text}\n`;
+              const t = item.querySelector('.timestamp').textContent;
+              const txt = item.querySelector('.timestamp-text').textContent;
+              content += `[${t}] ${txt}\n`;
             });
             break;
           case 'json':
@@ -891,6 +886,7 @@
         let content = '';
         let filename = '';
         let fileType = 'text/plain';
+
         switch (activeTab) {
           case 'text-only':
             content = transcriptText.textContent;
@@ -899,9 +895,9 @@
           case 'timestamps':
             const items = document.querySelectorAll('.timestamp-item');
             items.forEach(item => {
-              const timestamp = item.querySelector('.timestamp').textContent;
-              const text = item.querySelector('.timestamp-text').textContent;
-              content += `[${timestamp}] ${text}\n`;
+              const t = item.querySelector('.timestamp').textContent;
+              const txt = item.querySelector('.timestamp-text').textContent;
+              content += `[${t}] ${txt}\n`;
             });
             filename = 'transcript_with_timestamps.txt';
             break;
@@ -911,6 +907,7 @@
             fileType = 'application/json';
             break;
         }
+
         const blob = new Blob([content], { type: fileType });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -930,18 +927,15 @@
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
       }
-
       function formatTime(seconds) {
         const minutes = Math.floor(seconds / 60);
         const remainingSeconds = Math.floor(seconds % 60);
         const milliseconds = Math.floor((seconds % 1) * 1000);
-        return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(3, '0')}`;
+        return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}.${String(milliseconds).padStart(3, '0')}`;
       }
-
       function formatSpeakerId(speakerId) {
         return speakerId.replace('speaker_', 'Speaker ');
       }
-
       function showError(message) {
         errorMessage.textContent = message;
         errorMessage.style.display = 'block';
