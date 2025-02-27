@@ -445,6 +445,65 @@
     .github-link:hover {
       color: var(--lavender-accent);
     }
+    .sunflower-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      width: 100%;
+    }
+    .header-content {
+      z-index: 1;
+      text-align: center;
+    }
+    .sunflower {
+      width: 80px;
+      height: 80px;
+      background-image: url('sunflower.svg');
+      background-size: contain;
+      background-repeat: no-repeat;
+      position: absolute;
+      opacity: 0.8;
+      transition: transform 0.3s ease;
+    }
+    .sunflower:hover {
+      transform: rotate(10deg);
+    }
+    .sunflower.left {
+      left: 5%;
+    }
+    .sunflower.right {
+      right: 5%;
+      transform: scaleX(-1);
+    }
+    .sunflower.right:hover {
+      transform: scaleX(-1) rotate(-10deg);
+    }
+    .upload-container,
+    .result-container {
+      position: relative;
+    }
+    .upload-container::after,
+    .result-container::after {
+      content: '';
+      position: absolute;
+      bottom: -15px;
+      right: -15px;
+      width: 40px;
+      height: 40px;
+      background-image: url('sunflower.svg');
+      background-size: contain;
+      background-repeat: no-repeat;
+      transform: rotate(15deg);
+      opacity: 0.7;
+      z-index: 1;
+    }
+    @media (max-width: 768px) {
+      .sunflower {
+        width: 60px;
+        height: 60px;
+      }
+    }
   </style>
 </head>
 <body>
