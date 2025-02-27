@@ -197,24 +197,6 @@
             cursor: not-allowed;
         }
 
-        .api-key-container {
-            margin-bottom: 20px;
-        }
-
-        .api-key-input {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 2px solid var(--lavender-mid);
-            background-color: var(--white);
-            font-size: 16px;
-            outline: none;
-        }
-
-        .api-key-input:focus {
-            border-color: var(--lavender-dark);
-        }
-
         .progress-container {
             display: none;
             margin-top: 20px;
@@ -308,7 +290,7 @@
         .btn-group {
             display: flex;
             gap: 15px;
-            margin-top: 20px;
+            margin-bottom: 20px;
         }
 
         .btn-secondary {
@@ -365,12 +347,6 @@
         </header>
 
         <div class="upload-container">
-            <div class="api-key-container">
-                <label for="api-key" class="options-title">Your ElevenLabs API Key</label>
-                <input type="password" id="api-key" class="api-key-input" placeholder="Enter your ElevenLabs API key" required>
-                <p style="margin-top: 5px; font-size: 14px; color: #666;">Your API key is never stored on our servers. It's only used locally to make API calls.</p>
-            </div>
-
             <div class="upload-box" id="upload-box">
                 <div class="upload-icon">📂</div>
                 <h3>Drag & Drop or Click to Upload</h3>
@@ -437,6 +413,11 @@
         </div>
 
         <div class="result-container" id="result-container">
+            <div class="btn-group">
+                <button id="copy-btn" class="btn">Copy to Clipboard</button>
+                <button id="download-btn" class="btn btn-secondary">Download as Text File</button>
+            </div>
+            
             <div class="result-tabs">
                 <div class="tab active" data-tab="text-only">Text Only</div>
                 <div class="tab" data-tab="timestamps">With Timestamps</div>
@@ -454,11 +435,6 @@
             <div id="json" class="tab-content">
                 <pre id="json-content" style="white-space: pre-wrap; max-height: 500px; overflow-y: auto;"></pre>
             </div>
-
-            <div class="btn-group">
-                <button id="copy-btn" class="btn">Copy to Clipboard</button>
-                <button id="download-btn" class="btn btn-secondary">Download as Text File</button>
-            </div>
         </div>
     </div>
 
@@ -475,7 +451,6 @@
             const fileName = document.getElementById('file-name');
             const fileSize = document.getElementById('file-size');
             const transcribeBtn = document.getElementById('transcribe-btn');
-            const apiKeyInput = document.getElementById('api-key');
             const progressContainer = document.getElementById('progress-container');
             const progressBar = document.getElementById('progress');
             const statusText = document.getElementById('status');
@@ -496,6 +471,9 @@
             const diarizeCheckbox = document.getElementById('diarize-checkbox');
             const tagEventsCheckbox = document.getElementById('tag-events-checkbox');
             const languageSelect = document.getElementById('language-select');
+            
+            // Your API Key - Replace with your actual key
+            const apiKey = "YOUR_ELEVENLABS_API_KEY_HERE";
             
             let selectedFile = null;
             let transcriptionData = null;
@@ -529,8 +507,6 @@
                 }
             });
             
-            apiKeyInput.addEventListener('input', validateForm);
-            
             function handleFile(file) {
                 // Check if file is audio or video
                 if (!file.type.startsWith('audio/') && !file.type.startsWith('video/')) {
@@ -542,11 +518,8 @@
                 fileName.textContent = file.name;
                 fileSize.textContent = formatFileSize(file.size);
                 fileInfo.style.display = 'block';
-                validateForm();
-            }
-            
-            function validateForm() {
-                transcribeBtn.disabled = !selectedFile || !apiKeyInput.value.trim();
+                transcribeBtn.disabled = false;
+                
                 if (errorMessage.style.display === 'block') {
                     errorMessage.style.display = 'none';
                 }
@@ -555,7 +528,7 @@
             transcribeBtn.addEventListener('click', startTranscription);
             
             function startTranscription() {
-                if (!selectedFile || !apiKeyInput.value.trim()) {
+                if (!selectedFile) {
                     return;
                 }
                 
@@ -591,7 +564,7 @@
                 fetch('https://api.elevenlabs.io/v1/speech-to-text', {
                     method: 'POST',
                     headers: {
-                        'xi-api-key': apiKeyInput.value.trim()
+                        'xi-api-key': apiKey
                     },
                     body: formData
                 })
@@ -600,7 +573,7 @@
                     
                     if (!response.ok) {
                         return response.json().then(error => {
-                            throw new Error(error.detail?.message || 'Transcription failed. Please check your API key and try again.');
+                            throw new Error(error.detail?.message || 'Transcription failed. Please check your connection and try again.');
                         });
                     }
                     
