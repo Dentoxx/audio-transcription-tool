@@ -1,8 +1,68 @@
-<!DOCTYPE html>
+/* Add safe area insets for notched phones */
+    @supports (padding: max(0px)) {
+      body {
+        padding-left: max(20px, env(safe-area-inset-left));
+        padding-right: max(20px, env(safe-area-inset-right)); 
+        padding-bottom: max(20px, env(safe-area-inset-bottom));
+      }
+    }
+    
+    /* Improve speed on mobile browsers */
+    @media (max-width: 768px) {
+      .bg-sunflower {
+        display: none; /* Remove floating background sunflowers on mobile for performance */
+      }
+    }    /* Touch-friendly adjustments */
+    @media (hover: none) {
+      /* Improve touch targets for mobile */
+      .checkbox-container {
+        padding-left: 40px; /* Larger touch area */
+      }
+      .checkmark {
+        height: 28px;
+        width: 28px;
+      }
+      .checkbox-container .checkmark:after {
+        left: 10px;
+        top: 6px;
+        width: 6px;
+        height: 12px;
+      }
+      .btn, .tab {
+        padding-top: 14px;
+        padding-bottom: 14px;
+      }
+      .language-select {
+        padding: 14px;
+      }
+      
+      /* Disable hover animations on touch devices */
+      .upload-container:hover,
+      .result-container:hover,
+      .options-container:hover,
+      .checkbox-container:hover,
+      .timestamp-item:hover,
+      .speaker-section:hover,
+      .tab:hover,
+      .transcript-text:hover {
+        transform: none;
+      }
+      
+      /* Adjust or remove effects that depend on hover */
+      .btn:before {
+        display: none; /* Remove hover animation effect */
+      }
+      .sunflower:hover {
+        transform: none;
+      }
+      .sunflower.right:hover {
+        transform: scaleX(-1);
+      }
+    }<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>Audio Transcription Tool</title>
   <style>
     :root {
@@ -238,13 +298,14 @@
     .checkbox-container .checkmark:after {
       content: "";
       position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%) rotate(45deg);
+      /* Precisely position the checkmark */
+      left: 9px;  /* Carefully adjusted from 50% */
+      top: 5px;   /* Carefully adjusted from 50% */
       width: 5px;
       height: 10px;
       border: solid white;
       border-width: 0 3px 3px 0;
+      transform: rotate(45deg); /* Only rotate, no translation */
       display: none;
     }
     .checkbox-container:hover input ~ .checkmark {
@@ -260,8 +321,8 @@
       animation: checkmark 0.2s ease-in-out;
     }
     @keyframes checkmark {
-      0% { opacity: 0; transform: translate(-50%, -50%) rotate(0) scale(0.8); }
-      100% { opacity: 1; transform: translate(-50%, -50%) rotate(45deg) scale(1); }
+      0% { opacity: 0; transform: rotate(45deg) scale(0.8); }
+      100% { opacity: 1; transform: rotate(45deg) scale(1); }
     }
 
     .language-select {
@@ -675,16 +736,84 @@
       }
     }
     
+    /* Mobile responsiveness improvements */
     @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+      h1 {
+        font-size: 2.2rem;
+      }
+      .description {
+        font-size: 1rem;
+      }
       .sunflower {
         width: 60px;
         height: 60px;
       }
+      .sunflower.left {
+        left: 2%;
+      }
+      .sunflower.right {
+        right: 2%;
+      }
+      .upload-container, .result-container {
+        padding: 20px;
+      }
       .options-grid {
         grid-template-columns: 1fr;
+        gap: 10px;
       }
       .btn-group {
         flex-direction: column;
+      }
+      .corner-sunflower {
+        width: 25px;
+        height: 25px;
+      }
+      .upload-box {
+        padding: 30px 15px;
+      }
+      .tab {
+        padding: 10px;
+        font-size: 14px;
+      }
+    }
+    
+    /* Small phones */
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 1.8rem;
+      }
+      .description {
+        font-size: 0.9rem;
+      }
+      .upload-icon {
+        font-size: 40px;
+      }
+      .upload-box h3 {
+        font-size: 16px;
+      }
+      .upload-box p {
+        font-size: 12px;
+      }
+      .sunflower {
+        width: 40px;
+        height: 40px;
+      }
+      .options-title {
+        font-size: 1rem;
+      }
+      .checkbox-container {
+        font-size: 14px;
+      }
+      .checkmark {
+        height: 22px;
+        width: 22px;
+      }
+      .btn {
+        padding: 12px 20px;
+        font-size: 14px;
       }
     }
   </style>
@@ -965,10 +1094,10 @@
         
         // Calculate realistic timing based on file size (bytes)
         const fileSize = selectedFile.size;
-        // Assume an average transcription rate (bytes per second)
-        // This is a rough estimate - you'd tune this based on real-world testing
-        const bytesPerSecond = 50000; // 50KB per second as a baseline
-        const estimatedSeconds = Math.max(10, Math.min(300, fileSize / bytesPerSecond));
+        // Based on user feedback: 1.7MB processed in ~7 seconds = ~250KB/second
+        const bytesPerSecond = 250000; // Updated from 50000 to 250000 (250KB per second)
+        // Also adjust minimum time to 5 seconds and maximum to 3 minutes (180 seconds)
+        const estimatedSeconds = Math.max(5, Math.min(180, fileSize / bytesPerSecond));
         
         // Calculate a step size to reach ~99% in the estimated time
         // Using 350ms intervals from the original code
