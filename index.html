@@ -12,21 +12,20 @@
       .bg-sunflower {
         display: none; /* Remove floating background sunflowers on mobile for performance */
       }
-    }    /* Touch-friendly adjustments */
+    }    /* Media query for touch devices */
     @media (hover: none) {
       /* Improve touch targets for mobile */
       .checkbox-container {
-        padding-left: 40px; /* Larger touch area */
+        padding-left: 40px;
       }
       .checkmark {
         height: 28px;
         width: 28px;
       }
-      .checkbox-container .checkmark:after {
-        left: 10px;
-        top: 6px;
-        width: 6px;
-        height: 12px;
+      /* Adjusted check position for touch devices */
+      .checkbox-container input:checked ~ .checkmark:after {
+        width: 8px;
+        height: 16px;
       }
       .btn, .tab {
         padding-top: 14px;
@@ -295,18 +294,51 @@
       border-radius: 5px;
       transition: all 0.2s ease;
     }
-    .checkbox-container .checkmark:after {
+    /* Checkbox styles with completely new approach */
+    .checkbox-container {
+      position: relative;
+      padding-left: 35px;
+      cursor: pointer;
+      user-select: none;
+      font-weight: 500;
+      transition: transform 0.2s ease;
+      display: flex;
+      align-items: center;
+    }
+    
+    .checkbox-container input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
+    }
+    
+    .checkmark {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 24px;
+      width: 24px;
+      background-color: var(--white);
+      border: 2px solid var(--lavender-mid);
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+    
+    /* Create a new simpler checkmark using a different approach */
+    .checkbox-container input:checked ~ .checkmark:after {
       content: "";
       position: absolute;
-      /* Better fixed positioning for checkmark */
-      left: 8px;
-      top: 4px;
+      display: block;
+      left: 50%;
+      top: 40%;
+      transform: translate(-50%, -25%) rotate(45deg);
       width: 6px;
       height: 12px;
       border: solid white;
       border-width: 0 3px 3px 0;
-      transform: rotate(45deg);
-      display: none;
     }
     .checkbox-container:hover input ~ .checkmark {
       background-color: var(--lavender-light);
