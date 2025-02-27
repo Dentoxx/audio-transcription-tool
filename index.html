@@ -954,7 +954,7 @@
 
       transcribeBtn.addEventListener('click', startTranscription);
 
-      // Start transcription, only show progress for "transcribing"
+      // Start a more realistic simulation based on file size
       function startTranscription() {
         if (!selectedFile) return;
 
@@ -962,7 +962,21 @@
         progressContainer.style.display = 'block';
         transcribeBtn.disabled = true;
         errorMessage.style.display = 'none';
-
+        
+        // Calculate realistic timing based on file size (bytes)
+        const fileSize = selectedFile.size;
+        // Assume an average transcription rate (bytes per second)
+        // This is a rough estimate - you'd tune this based on real-world testing
+        const bytesPerSecond = 50000; // 50KB per second as a baseline
+        const estimatedSeconds = Math.max(10, Math.min(300, fileSize / bytesPerSecond));
+        
+        // Calculate a step size to reach ~99% in the estimated time
+        // Using 350ms intervals from the original code
+        const totalSteps = Math.floor(estimatedSeconds * (1000 / 350));
+        const progressStep = 99 / totalSteps;
+        
+        console.log(`File size: ${formatFileSize(fileSize)}, Est. time: ${Math.round(estimatedSeconds)}s, Steps: ${totalSteps}, Step size: ${progressStep.toFixed(3)}%`);
+        
         // Build form data
         const formData = new FormData();
         formData.append('file', selectedFile);
@@ -978,27 +992,35 @@
         xhr.open('POST', 'https://api.elevenlabs.io/v1/speech-to-text');
         xhr.setRequestHeader('xi-api-key', apiKey);
 
-        // Start simulating the "transcribing" progress from 0% to ~99%
+        // Start simulating progress based on file size
         let transProgress = 0;
         let at99Seconds = 0;
-        
-        // Debug the initial state
-        console.log("Initial progressBar width:", progressBar.style.width);
+        let stepsCompleted = 0;
         
         const transcriptionInterval = setInterval(function() {
           if (transProgress < 99) {
-            transProgress++;
-            // Use explicit pixel values for absolutely reliable sizing
+            stepsCompleted++;
+            
+            // Add a bit of randomness to make it look more natural
+            // Higher randomness at the beginning, less towards the end
+            const randomFactor = 1 + (Math.random() * 0.4 - 0.2) * (1 - transProgress/100);
+            
+            // Calculate new progress with natural slowdown towards the end
+            const newProgress = Math.min(99, transProgress + (progressStep * randomFactor));
+            transProgress = newProgress;
+            
+            // Update progress bar
             progressBar.style.width = transProgress + '%';
             // Force a browser reflow to make sure styles are applied
             void progressBar.offsetWidth;
             
-            // Log progress every 10% for debugging
-            if (transProgress % 10 === 0) {
-              console.log("Progress at " + transProgress + "%", progressBar.style.width);
-            }
+            // Update status text
+            statusText.textContent = `Transcribing: ${Math.floor(transProgress)}%`;
             
-            statusText.textContent = `Transcribing: ${transProgress}%`;
+            // Log progress occasionally
+            if (stepsCompleted % 10 === 0) {
+              console.log(`Progress: ${transProgress.toFixed(1)}%, Step: ${stepsCompleted}/${totalSteps}`);
+            }
           } else {
             // We're at 99%, now count seconds
             at99Seconds++;
