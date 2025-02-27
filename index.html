@@ -30,11 +30,47 @@
       display: flex;
       flex-direction: column;
       color: var(--text-primary);
+      position: relative;
+      overflow-x: hidden;
     }
+    
+    /* Floating Background Sunflowers */
+    .bg-sunflower {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      background-image: url('sunflower.svg');
+      background-size: contain;
+      background-repeat: no-repeat;
+      z-index: -1;
+      opacity: 0.1;
+      pointer-events: none;
+      animation: float 15s infinite ease-in-out;
+    }
+    .bg-sunflower:nth-child(odd) {
+      animation-duration: 20s;
+    }
+    .bg-sunflower:nth-child(3n) {
+      animation-duration: 25s;
+      animation-delay: 5s;
+    }
+    .bg-sunflower:nth-child(4n) {
+      animation-duration: 18s;
+      animation-delay: 8s;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0); }
+      25% { transform: translateY(-15px) rotate(5deg); }
+      50% { transform: translateY(5px) rotate(-5deg); }
+      75% { transform: translateY(-10px) rotate(3deg); }
+    }
+    
     .container {
       max-width: 900px;
       margin: 0 auto;
       width: 100%;
+      position: relative;
+      z-index: 1;
     }
     header {
       text-align: center;
@@ -65,10 +101,12 @@
       box-shadow: var(--box-shadow);
       margin-bottom: 30px;
       border: 1px solid rgba(147,112,219,0.1);
-      transition: transform 0.3s ease;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
     }
     .upload-container:hover {
       transform: translateY(-5px);
+      box-shadow: 0 12px 30px rgba(72, 61, 139, 0.2);
     }
     .upload-box {
       border: 3px dashed var(--lavender-mid);
@@ -104,6 +142,10 @@
       margin-bottom: 15px;
       position: relative;
       z-index: 1;
+      transition: transform 0.3s ease;
+    }
+    .upload-box:hover .upload-icon {
+      transform: scale(1.1) rotate(5deg);
     }
     .upload-box h3 {
       position: relative;
@@ -126,6 +168,10 @@
       margin-bottom: 20px;
       display: none;
       border: 1px solid rgba(147,112,219,0.1);
+      transition: transform 0.3s ease;
+    }
+    .file-info:hover {
+      transform: translateX(5px);
     }
     .file-info p {
       margin-bottom: 5px;
@@ -136,6 +182,11 @@
       padding: 20px;
       border-radius: 12px;
       border: 1px solid rgba(147,112,219,0.1);
+      transition: transform 0.3s ease;
+      position: relative;
+    }
+    .options-container:hover {
+      transform: translateY(-3px);
     }
     .options-title {
       font-weight: 600;
@@ -153,13 +204,17 @@
       align-items: center;
     }
 
-    /* Restore old-style checkbox alignment */
+    /* Checkbox styling */
     .checkbox-container {
       position: relative;
-      padding-left: 35px; /* space to the left for the box */
+      padding-left: 35px;
       cursor: pointer;
       user-select: none;
       font-weight: 500;
+      transition: transform 0.2s ease;
+    }
+    .checkbox-container:hover {
+      transform: translateX(3px);
     }
     .checkbox-container input {
       position: absolute;
@@ -202,6 +257,11 @@
     }
     .checkbox-container input:checked ~ .checkmark:after {
       display: block;
+      animation: checkmark 0.2s ease-in-out;
+    }
+    @keyframes checkmark {
+      0% { opacity: 0; transform: translate(-50%, -50%) rotate(0) scale(0.8); }
+      100% { opacity: 1; transform: translate(-50%, -50%) rotate(45deg) scale(1); }
     }
 
     .language-select {
@@ -223,6 +283,7 @@
     .language-select:focus {
       border-color: var(--lavender-dark);
       box-shadow: 0 0 0 3px rgba(147,112,219,0.2);
+      transform: translateY(-2px);
     }
     .btn {
       background: var(--lavender-gradient);
@@ -318,6 +379,12 @@
       margin-top: 30px;
       margin-bottom: 30px;
       border: 1px solid rgba(147,112,219,0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+    }
+    .result-container:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 30px rgba(72, 61, 139, 0.2);
     }
     .result-tabs {
       display: flex;
@@ -335,6 +402,7 @@
     }
     .tab:hover {
       color: var(--lavender-accent);
+      transform: translateY(-3px);
     }
     .tab.active {
       color: var(--lavender-dark);
@@ -345,6 +413,11 @@
     }
     .tab-content.active {
       display: block;
+      animation: fadeIn 0.5s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     .transcript-text {
       line-height: 1.7;
@@ -355,6 +428,11 @@
       padding: 20px;
       border-radius: 10px;
       border: 1px solid rgba(147,112,219,0.1);
+      transition: transform 0.3s ease;
+    }
+    .transcript-text:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(72, 61, 139, 0.1);
     }
     .timestamps-container .transcript-text {
       margin-bottom: 30px;
@@ -369,7 +447,7 @@
     }
     .timestamp-item:hover {
       background-color: rgba(230,230,250,0.4);
-      transform: translateX(3px);
+      transform: translateX(5px);
     }
     .timestamp {
       min-width: 100px;
@@ -386,6 +464,11 @@
       background-color: rgba(230,230,250,0.3);
       border-radius: 12px;
       border: 1px solid rgba(147,112,219,0.1);
+      transition: transform 0.3s ease;
+    }
+    .speaker-section:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(72, 61, 139, 0.1);
     }
     .btn-group {
       display: flex;
@@ -412,6 +495,7 @@
       background: rgba(230,230,250,0.3);
       border-radius: 15px;
       margin-top: 30px;
+      position: relative;
     }
     .footer-content {
       display: flex;
@@ -445,7 +529,10 @@
     }
     .github-link:hover {
       color: var(--lavender-accent);
+      transform: translateY(-2px);
     }
+    
+    /* Sunflower styling and positioning */
     .sunflower-container {
       display: flex;
       align-items: center;
@@ -468,7 +555,8 @@
       transition: transform 0.3s ease;
     }
     .sunflower:hover {
-      transform: rotate(10deg);
+      transform: rotate(10deg) scale(1.1);
+      filter: drop-shadow(0 0 5px rgba(147,112,219,0.5));
     }
     .sunflower.left {
       left: 5%;
@@ -478,36 +566,122 @@
       transform: scaleX(-1);
     }
     .sunflower.right:hover {
-      transform: scaleX(-1) rotate(-10deg);
+      transform: scaleX(-1) rotate(-10deg) scale(1.1);
     }
-    .upload-container,
-    .result-container {
-      position: relative;
-    }
-    .upload-container::after,
-    .result-container::after {
-      content: '';
+    
+    /* Corner sunflowers */
+    .corner-sunflower {
       position: absolute;
-      bottom: -15px;
-      right: -15px;
-      width: 40px;
-      height: 40px;
       background-image: url('sunflower.svg');
       background-size: contain;
       background-repeat: no-repeat;
-      transform: rotate(15deg);
-      opacity: 0.7;
+      transition: transform 0.3s ease;
       z-index: 1;
+      width: 30px;
+      height: 30px;
     }
+    .corner-sunflower:hover {
+      transform: rotate(15deg) scale(1.2);
+    }
+    .corner-sunflower.top-left {
+      top: -15px;
+      left: -15px;
+      transform: rotate(-45deg);
+    }
+    .corner-sunflower.top-left:hover {
+      transform: rotate(-30deg) scale(1.2);
+    }
+    .corner-sunflower.top-right {
+      top: -15px;
+      right: -15px;
+      transform: rotate(45deg);
+    }
+    .corner-sunflower.top-right:hover {
+      transform: rotate(60deg) scale(1.2);
+    }
+    .corner-sunflower.bottom-left {
+      bottom: -15px;
+      left: -15px;
+      transform: rotate(-135deg);
+    }
+    .corner-sunflower.bottom-left:hover {
+      transform: rotate(-120deg) scale(1.2);
+    }
+    .corner-sunflower.bottom-right {
+      bottom: -15px;
+      right: -15px;
+      transform: rotate(135deg);
+    }
+    .corner-sunflower.bottom-right:hover {
+      transform: rotate(150deg) scale(1.2);
+    }
+    
+    /* Success Animation */
+    .success-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+      display: none;
+    }
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: var(--lavender-mid);
+      opacity: 0.8;
+      border-radius: 50%;
+      animation: confetti-fall 4s ease-out forwards;
+    }
+    .confetti:nth-child(odd) {
+      background-color: var(--lavender-accent);
+    }
+    .confetti:nth-child(3n) {
+      background-color: var(--lavender-dark);
+      width: 8px;
+      height: 8px;
+    }
+    .confetti:nth-child(4n) {
+      background-color: var(--lavender-light);
+      width: 12px;
+      height: 12px;
+    }
+    @keyframes confetti-fall {
+      0% {
+        transform: translateY(-10px) rotate(0);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+    
     @media (max-width: 768px) {
       .sunflower {
         width: 60px;
         height: 60px;
       }
+      .options-grid {
+        grid-template-columns: 1fr;
+      }
+      .btn-group {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
 <body>
+  <!-- Background Sunflowers -->
+  <div class="bg-sunflower" style="top: 15%; left: 8%;"></div>
+  <div class="bg-sunflower" style="top: 35%; right: 5%;"></div>
+  <div class="bg-sunflower" style="top: 60%; left: 12%;"></div>
+  <div class="bg-sunflower" style="top: 75%; right: 10%;"></div>
+  <div class="bg-sunflower" style="top: 90%; left: 20%;"></div>
+
   <div class="container">
     <header>
       <div class="sunflower-container">
@@ -524,6 +698,10 @@
     </header>
 
     <div class="upload-container">
+      <!-- Corner Sunflowers -->
+      <div class="corner-sunflower top-left"></div>
+      <div class="corner-sunflower top-right"></div>
+      
       <div class="upload-box" id="upload-box">
         <div class="upload-icon">🎙️</div>
         <h3>Drag & Drop or Click to Upload</h3>
@@ -537,6 +715,9 @@
       </div>
 
       <div class="options-container">
+        <!-- Corner Sunflower -->
+        <div class="corner-sunflower top-right"></div>
+        
         <h3 class="options-title">Transcription Options</h3>
         <div class="options-grid">
           <div class="option-item">
@@ -586,9 +767,17 @@
         </div>
         <div class="status" id="status">Preparing transcription...</div>
       </div>
+      
+      <!-- Corner Sunflowers -->
+      <div class="corner-sunflower bottom-left"></div>
+      <div class="corner-sunflower bottom-right"></div>
     </div>
 
     <div class="result-container" id="result-container">
+      <!-- Corner Sunflowers -->
+      <div class="corner-sunflower top-left"></div>
+      <div class="corner-sunflower top-right"></div>
+      
       <div class="btn-group">
         <button id="copy-btn" class="btn">Copy to Clipboard</button>
         <button id="download-btn" class="btn btn-secondary">Download as Text File</button>
@@ -609,6 +798,10 @@
       <div id="json" class="tab-content">
         <pre id="json-content"></pre>
       </div>
+      
+      <!-- Corner Sunflowers -->
+      <div class="corner-sunflower bottom-left"></div>
+      <div class="corner-sunflower bottom-right"></div>
     </div>
   </div>
 
@@ -621,7 +814,12 @@
         Powered by <a href="https://elevenlabs.io/" target="_blank" class="github-link">ElevenLabs</a>
       </div>
     </div>
+    <!-- Corner Sunflower -->
+    <div class="corner-sunflower top-right"></div>
   </footer>
+  
+  <!-- Success Animation Container -->
+  <div id="success-animation" class="success-animation"></div>
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -642,6 +840,7 @@
       const copyBtn = document.getElementById('copy-btn');
       const downloadBtn = document.getElementById('download-btn');
       const errorMessage = document.getElementById('error-message');
+      const successAnimation = document.getElementById('success-animation');
 
       // Tabs
       const tabs = document.querySelectorAll('.tab');
@@ -659,6 +858,31 @@
       let selectedFile = null;
       let transcriptionData = null;
       let activeTab = 'text-only';
+
+      // Create confetti animation
+      function createConfetti() {
+        successAnimation.style.display = 'block';
+        successAnimation.innerHTML = '';
+        
+        const numberOfConfetti = 100;
+        
+        for (let i = 0; i < numberOfConfetti; i++) {
+          const confetti = document.createElement('div');
+          confetti.classList.add('confetti');
+          
+          // Random positions
+          confetti.style.left = Math.random() * 100 + 'vw';
+          confetti.style.animationDelay = Math.random() * 2 + 's';
+          confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+          
+          successAnimation.appendChild(confetti);
+        }
+        
+        // Remove animation after it completes
+        setTimeout(() => {
+          successAnimation.style.display = 'none';
+        }, 5000);
+      }
 
       // Handle drag & drop
       uploadBox.addEventListener('dragover', function(e) {
@@ -702,6 +926,12 @@
         if (errorMessage.style.display === 'block') {
           errorMessage.style.display = 'none';
         }
+        
+        // Add a subtle bounce animation to the file info
+        fileInfo.style.animation = 'none';
+        setTimeout(() => {
+          fileInfo.style.animation = 'fadeIn 0.5s ease';
+        }, 10);
       }
 
       transcribeBtn.addEventListener('click', startTranscription);
@@ -761,6 +991,12 @@
                 resultContainer.style.display = 'block';
                 progressContainer.style.display = 'none';
                 transcribeBtn.disabled = false;
+                
+                // Trigger success animation
+                createConfetti();
+                
+                // Scroll to results
+                resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
               }, 1000);
 
             } else {
@@ -939,7 +1175,27 @@
       function showError(message) {
         errorMessage.textContent = message;
         errorMessage.style.display = 'block';
+        
+        // Add a little shake animation
+        errorMessage.classList.add('shake');
+        setTimeout(() => {
+          errorMessage.classList.remove('shake');
+        }, 500);
       }
+      
+      // Add animation keyframes dynamically
+      const style = document.createElement('style');
+      style.innerHTML = `
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+          20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        .shake {
+          animation: shake 0.5s ease;
+        }
+      `;
+      document.head.appendChild(style);
     });
   </script>
 </body>
