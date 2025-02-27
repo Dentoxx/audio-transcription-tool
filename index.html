@@ -335,24 +335,35 @@
     }
     .progress-bar {
       height: 10px;
-      background-color: var(--lavender-light);
+      background-color: #E6E6FA; /* Explicitly using hex color instead of variable */
       border-radius: 5px;
       overflow: hidden;
       box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+      position: relative;
     }
     .progress {
+      position: absolute;
+      top: 0;
+      left: 0;
       height: 100%;
-      background: var(--lavender-gradient);
+      background: #7B68EE; /* Solid color that's easy to see */
       width: 0%;
-      transition: width 0.3s ease;
       border-radius: 5px;
+      z-index: 2; /* Ensure it's above any other elements */
+      transition: width 0.3s ease;
+    }
+    /* Add animated stripes as a separate element */
+    .progress::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       background-size: 15px 15px;
       background-image: linear-gradient(45deg, rgba(255,255,255,0.2) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.2) 75%, transparent 75%, transparent);
       animation: progress-animation 1s linear infinite;
-      /* Ensure proper display on all browsers */
-      display: block;
-      position: relative;
-      min-width: 5px;
+      z-index: 3;
     }
     @keyframes progress-animation {
       0% { background-position: 0 0; }
@@ -766,10 +777,13 @@
       <div class="error-message" id="error-message"></div>
 
       <div class="progress-container" id="progress-container">
+        <!-- New simplified progress bar implementation -->
         <div class="progress-bar">
           <div class="progress" id="progress"></div>
         </div>
         <div class="status" id="status">Preparing transcription...</div>
+        <!-- Debug display -->
+        <div id="debug-info" style="font-size: 10px; color: #999; margin-top: 5px; display: none;"></div>
       </div>
       
       <!-- Corner Sunflowers -->
@@ -967,11 +981,23 @@
         // Start simulating the "transcribing" progress from 0% to ~99%
         let transProgress = 0;
         let at99Seconds = 0;
+        
+        // Debug the initial state
+        console.log("Initial progressBar width:", progressBar.style.width);
+        
         const transcriptionInterval = setInterval(function() {
           if (transProgress < 99) {
             transProgress++;
-            // Set the width directly with a string value with % unit
+            // Use explicit pixel values for absolutely reliable sizing
             progressBar.style.width = transProgress + '%';
+            // Force a browser reflow to make sure styles are applied
+            void progressBar.offsetWidth;
+            
+            // Log progress every 10% for debugging
+            if (transProgress % 10 === 0) {
+              console.log("Progress at " + transProgress + "%", progressBar.style.width);
+            }
+            
             statusText.textContent = `Transcribing: ${transProgress}%`;
           } else {
             // We're at 99%, now count seconds
@@ -994,10 +1020,11 @@
             clearInterval(transcriptionInterval);
 
             if (xhr.status === 200) {
-              // Set progress to 100% - using direct style for reliability
+              // Set progress to 100% - using direct style for reliability 
               progressBar.style.width = '100%';
               // Force a reflow to ensure the browser applies the style immediately
-              progressBar.offsetHeight;
+              void progressBar.offsetWidth;
+              console.log("Completed! Final width:", progressBar.style.width);
               statusText.textContent = 'Transcription successful!';
 
               const data = JSON.parse(xhr.responseText);
