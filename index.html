@@ -605,6 +605,7 @@
       let activeResultTab = 'text';
       let transcriptionData = null;
       let retryCount = 0;
+      let progressTimer = null;
       const MAX_RETRIES = 2;
       
       // Show YouTube warning by default
@@ -847,7 +848,8 @@
         youtubeFallback.style.display = 'none';
         
         // Start progress animation (YouTube takes longer)
-        startProgressAnimation(60);
+        if (progressTimer) clearInterval(progressTimer);
+        progressTimer = startProgressAnimation(60);
         
         // Send to server
         fetch(`${SERVER_URL}/extract-and-transcribe`, {
@@ -856,7 +858,10 @@
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            youtubeUrl: selectedYoutubeUrl
+            youtubeUrl: selectedYoutubeUrl,
+            diarize: diarizeCheckbox.checked ? 'true' : 'false',
+            tag_audio_events: tagEventsCheckbox.checked ? 'true' : 'false',
+            language_code: languageSelect.value
           })
         })
         .then(response => {
@@ -888,74 +893,6 @@
           progressBar.style.width = '100%';
           statusText.textContent = 'Transcription complete!';
           
-          // Store data
-          transcriptionData = data.transcription;
-          
-          // Display results
-          displayResults(data.transcription);
-          
-          setTimeout(() => {
-            progressContainer.style.display = 'none';
-            resultContainer.style.display = 'block';
-            resultContainer.scrollIntoView({ behavior: 'smooth' });
-          }, 1000);
-        })
-        .catch(error => {
-          console.error('Transcription error:', error);
-          progressContainer.style.display = 'none';
-          showError('Error: ' + error.message);
-          transcribeBtn.disabled = false;
-        });
-      }
-      
-      function transcribeYouTube() {
-        console.log('Transcribing YouTube video');
-        
-        // Show progress
-        progressContainer.style.display = 'block';
-        transcribeBtn.disabled = true;
-        errorMessage.style.display = 'none';
-        resultContainer.style.display = 'none';
-        
-        // Start progress animation (YouTube takes longer)
-        startProgressAnimation(60);
-        
-        // Send to server
-        fetch(`${SERVER_URL}/extract-and-transcribe`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            youtubeUrl: selectedYoutubeUrl
-          })
-        })
-        .then(response => {
-          console.log('Server response status:', response.status);
-          
-          if (!response.ok) {
-            return response.text().then(text => {
-              console.error('Error response text:', text);
-              try {
-                return JSON.parse(text);
-              } catch (e) {
-                throw new Error('Server error: ' + text);
-              }
-            });
-          }
-          
-          return response.json();
-        })
-        .then(data => {
-          console.log('Received data from server:', data);
-          
-          if (data.error) {
-            throw new Error(data.error);
-          }
-          
-          progressBar.style.width = '100%';
-          statusText.textContent = 'Transcription complete!';
-          
           // Update video title if available
           if (data.videoTitle) {
             videoTitle.textContent = data.videoTitle;
@@ -976,8 +913,36 @@
         .catch(error => {
           console.error('YouTube transcription error:', error);
           progressContainer.style.display = 'none';
-          showError('Error: ' + error.message);
-          transcribeBtn.disabled = false;
+          
+          // Show fallback options after the first failure
+          if (retryCount >= 1) {
+            youtubeFallback.style.display = 'block';
+          }
+          
+          // Handle retry logic for YouTube
+          if (error.message.includes('410') || error.message.includes('blocked') || 
+              error.message.includes('unavailable') || error.message.includes('failed')) {
+            
+            if (retryCount < MAX_RETRIES) {
+              retryCount++;
+              
+              showError(`YouTube extraction failed (attempt ${retryCount}/${MAX_RETRIES+1}). Retrying with different settings...`);
+              
+              // Enable the button after a short delay
+              setTimeout(() => {
+                transcribeBtn.disabled = false;
+                transcribeBtn.textContent = `Retry YouTube Extraction (Attempt ${retryCount+1}/${MAX_RETRIES+1})`;
+                transcribeBtn.classList.add('btn-youtube');
+              }, 1500);
+            } else {
+              showError('YouTube extraction failed after multiple attempts. YouTube may be blocking the download. Please try downloading the audio yourself and upload it using the File Upload tab.');
+              transcribeBtn.disabled = true;
+              youtubeFallback.style.display = 'block';
+            }
+          } else {
+            showError('Error: ' + error.message);
+            transcribeBtn.disabled = false;
+          }
         });
       }
       
